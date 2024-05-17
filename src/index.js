@@ -9,6 +9,11 @@ const session = require("express-session");
 const passport = require("passport");
 const morgan = require("morgan");
 const db = require("./config/db");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./swagger");
+
+//swagger
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 passport.serializeUser((user, done) => {
   done(null, user);
