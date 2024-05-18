@@ -10,10 +10,11 @@ const passport = require("passport");
 const morgan = require("morgan");
 const db = require("./config/db");
 const swaggerUi = require("swagger-ui-express");
-const swaggerSpec = require("./swagger");
+const swaggerSpec = require("./ulti/swagger");
+const swaggerDocument = require("./ulti/swagger.json");
 
-//swagger
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 passport.serializeUser((user, done) => {
   done(null, user);

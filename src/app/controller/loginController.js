@@ -28,7 +28,12 @@ class LoginController {
                 expires: new Date(Date.now() + 18000000000),
               });
               console.log(token);
-              res.status(200).json("Đăng nhập thành công");
+              res.status(200).send({
+                status: 200,
+                message: "Đăng nhập thành công",
+                token: token,
+                data: data,
+              });
             }
           });
         } else {

@@ -1,37 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const homeController = require("../app/controller/homeController");
+const UserModel = require("../app/models/user");
 
-/**
- * @swagger
- * /home:
- *   get:
- *     summary: trang chủ
- *     description: hiển thị thông tin ở trang chủ
- *     responses:
- *       200:
- *         description: Vào trang chủ thành công
- *         content:
- *           application/json:
- *             schema:
- *               type: string
- *               items:
- *                 $ref: '#/components/schemas/User'
- *
- * components:
- *   schemas:
- *     User:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *         name:
- *           type: string
- *         username:
- *           type: string
- *         password:
- *           type: string
- */
+router.get("/", (req, res) => {
+  const user = UserModel.find();
+  res.send(user);
+});
+
 router.get("/", homeController.home);
 
 module.exports = router;

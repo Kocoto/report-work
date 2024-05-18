@@ -3,36 +3,36 @@ const ExcelJS = require("exceljs");
 
 class ExportController {
   async export(req, res, next) {
-    const date = req.body.date;
+    const date = req.query.date;
     try {
-      //   const report = await ReportModel.find({ date });
-      const report = [
-        {
-          date: null,
-          today: "ngủ",
-          tomorrow: "chơi",
-          __v: 0,
-        },
-        {
-          date: null,
-          today: "ngủ ádas",
-          tomorrow: "chơi ádasd",
+      const report = await ReportModel.find({ date });
+      // const report = [
+      //   {
+      //     date: null,
+      //     today: "ngủ",
+      //     tomorrow: "chơi",
+      //     __v: 0,
+      //   },
+      //   {
+      //     date: null,
+      //     today: "ngủ ádas",
+      //     tomorrow: "chơi ádasd",
 
-          __v: 0,
-        },
-        {
-          date: null,
-          today: "ngủ ádas",
-          tomorrow: "chơi ádasd",
-          __v: 0,
-        },
-        {
-          date: null,
-          today: "ngủ ádas",
-          tomorrow: "chơi ádasd",
-          __v: 0,
-        },
-      ];
+      //     __v: 0,
+      //   },
+      //   {
+      //     date: null,
+      //     today: "ngủ ádas",
+      //     tomorrow: "chơi ádasd",
+      //     __v: 0,
+      //   },
+      //   {
+      //     date: null,
+      //     today: "ngủ ádas",
+      //     tomorrow: "chơi ádasd",
+      //     __v: 0,
+      //   },
+      // ];
       if (report && report.length > 0) {
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Report");

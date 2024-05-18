@@ -1,0 +1,152 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Report_work API",
+    "description": ""
+  },
+  "host": "localhost:3000",
+  "tags": [
+    {
+      "name": "Users"
+    }
+  ],
+  "securityDefinitions": {
+    "ApiKeyAuth": {
+      "type": "apiKey",
+      "in": "headers",
+      "name": "authorization"
+    }
+  },
+  "paths": {
+    "/create": {
+      "post": {
+        "summary": "add user",
+        "tags": ["Users"],
+        "description": "Admin add user",
+        "parameters": [
+          {
+            "name": "user information",
+            "in": "body",
+            "description": "Admin add user",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "201": {
+            "description": "Add user success",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "500": {
+            "description": "Add user failed!!"
+          }
+        }
+      }
+    },
+    "/export": {
+      "get": {
+        "summary": "Export report",
+        "tags": ["Admin"],
+        "description": "Admin export report",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "description": "Date to export report",
+            "schema": {
+              "type": "Date"
+            }
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Downloaded excel file successfully"
+          },
+          "404": {
+            "description": "No reports found for this date!!"
+          },
+          "500": {
+            "description": "Error while generating report!!"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "Login",
+        "tags": ["Authentication"],
+        "description": "User login",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "body",
+            "description": "Username of user",
+            "schema": {
+              "$ref": "#/definitions/Login"
+            }
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Tải file excel về thành công"
+          },
+          "404": {
+            "description": "Không tìm thấy báo cáo ngày này!!"
+          },
+          "500": {
+            "description": "Lỗi khi tạo báo cáo!!"
+          }
+        }
+      }
+    }
+  },
+
+  "definitions": {
+    "User": {
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "Login": {
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "report": {
+      "properties": {
+        "today": {
+          "type": "string"
+        },
+        "tomorrow": {
+          "type": "string"
+        },
+        "date": {
+          "type": "Date"
+        }
+      }
+    }
+  }
+}
