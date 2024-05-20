@@ -1,8 +1,9 @@
 const ReportModel = require("../models/report");
 const ExcelJS = require("exceljs");
 const NoteModel = require("../models/note");
+const { now } = require("mongoose");
 class ExportController {
-  async export(req, res, next) {
+  async download(req, res, next) {
     const { date, note } = req.body;
     try {
       const avc = await NoteModel.findOneAndUpdate({ note });
@@ -40,6 +41,10 @@ class ExportController {
       console.error(error);
       res.status(500).send({ message: "Lỗi khi tạo báo cáo Excel" });
     }
+  }
+
+  export(req, res) {
+    const date = req.query.date ? req.query.date : new Date();
   }
 }
 

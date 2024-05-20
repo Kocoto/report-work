@@ -49,7 +49,7 @@
       }
     },
     "/export": {
-      "get": {
+      "post": {
         "summary": "Export report",
         "tags": ["Admin"],
         "description": "Admin export report",
@@ -95,13 +95,13 @@
         "produces": ["application/json"],
         "responses": {
           "200": {
-            "description": "Tải file excel về thành công"
+            "description": "Login successfully"
           },
           "404": {
-            "description": "Không tìm thấy báo cáo ngày này!!"
+            "description": "No user found!!"
           },
           "500": {
-            "description": "Lỗi khi tạo báo cáo!!"
+            "description": "Error when login!!"
           }
         }
       }

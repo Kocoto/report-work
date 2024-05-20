@@ -37,7 +37,7 @@ class LoginController {
             }
           });
         } else {
-          res.status(500).json("Không tìm thấy người dùng");
+          res.status(404).json("Không tìm thấy người dùng");
         }
       })
       .catch((err) => {
