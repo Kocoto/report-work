@@ -12,17 +12,24 @@
     }
   ],
   "securityDefinitions": {
-    "ApiKeyAuth": {
+    "Bearer": {
       "type": "apiKey",
-      "in": "headers",
-      "name": "authorization"
+      "description": "JWT Authorization header using the Bearer scheme. \\r\\n\\r\\n\r\n            Enter 'Bearer' [space] and then your token in the text input below.\r\n            \\r\\n\\r\\nExample: 'Bearer 12345abcdef'",
+      "name": "Authorization",
+      "in": "header"
     }
   },
+
+  "security": [
+    {
+      "Bearer": []
+    }
+  ],
   "paths": {
-    "/create": {
+    "/user/create": {
       "post": {
         "summary": "add user",
-        "tags": ["Users"],
+        "tags": ["Admin"],
         "description": "Admin add user",
         "parameters": [
           {
@@ -135,7 +142,7 @@
         }
       }
     },
-    "/report": {
+    "/report/input": {
       "post": {
         "summary": "Submit report",
         "tags": ["Users"],
@@ -163,10 +170,141 @@
           }
         }
       }
+    },
+    "/report": {
+      "get": {
+        "summary": "Form submit report",
+        "tags": ["Users"],
+        "description": "User input report",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "description": "report's date",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "idUser",
+            "in": "query",
+            "description": "user's id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Login successfully",
+            "schema": {
+              "$ref": "#/definitions/Report"
+            }
+          },
+          "500": {
+            "description": "Error server when searching for report!!"
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "summary": "get all user",
+        "tags": ["Admin"],
+        "description": "User's information",
+        "responses": {
+          "200": {
+            "description": "Login successfully",
+            "schema": {
+              "$ref": "#/definitions/AllUser"
+            }
+          },
+          "500": {
+            "description": "lỗi sever"
+          }
+        }
+      }
+    },
+    "/user/edit": {
+      "put": {
+        "summary": "Edit user",
+        "tags": ["Admin"],
+        "description": "Edit user's information",
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "description": " user's information",
+            "schema": {
+              "$ref": "#/definitions/EditUser"
+            }
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Login successfully",
+            "schema": {
+              "$ref": "#/definitions/EditUser"
+            }
+          },
+          "500": {
+            "description": "Error server when edit user!!"
+          }
+        }
+      }
     }
   },
 
   "definitions": {
+    "EditUser": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "msnv": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "AllUser": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "msnv": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        }
+      }
+    },
     "User": {
       "properties": {
         "username": {

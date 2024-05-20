@@ -6,6 +6,11 @@ const reportSchema = new mongoose.Schema(
     today: String,
     tomorrow: String,
     name: String,
+    idUser: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+      required: true,
+    },
   },
   {
     timestamps: true,

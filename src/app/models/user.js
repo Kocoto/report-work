@@ -5,8 +5,13 @@ const userSchema = new mongoose.Schema(
     username: String,
     password: String,
     role: String,
-    status: String,
+    status: {
+      type: String,
+      default: "active",
+      enum: ["active", "inactive"],
+    },
     name: String,
+    msnv: String,
   },
   {
     timestamps: true,

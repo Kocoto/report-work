@@ -6,8 +6,8 @@ const exportRouter = require("./export");
 const { checkLogin, checkAdmin } = require("../ulti/authorize");
 
 function route(app) {
-  app.use("/create", checkLogin, checkAdmin, createAccountRouter);
-  app.use("/export", exportRouter);
+  app.use("/user", checkLogin, checkAdmin, createAccountRouter);
+  app.use("/export", checkLogin, checkAdmin, exportRouter);
   app.use("/report", checkLogin, reportRouter);
   app.use("/login", loginRouter);
   app.use("/", homeRouter);
