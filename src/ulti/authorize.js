@@ -5,7 +5,7 @@ const UserModel = require("../app/models/user");
 function checkLogin(req, res, next) {
   //check
   try {
-    var token = req.cookies.tokenLogin;
+    const token = req.headers.authorization?.split(" ")[1];
     var idUser = jwt.verify(token, "PW");
     UserModel.findOne({
       _id: idUser,
