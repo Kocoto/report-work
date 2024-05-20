@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --inspect src/index.js",
+    "start": "node src/index.js",
+    "dev": "nodemon --inspect src/index.js",
     "watch": "node-sass --watch src/resources/scss/app.scss src/public/css/app.css",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,9 +24,11 @@
     "method-override": "^3.0.0",
     "mongoose": "^8.3.5",
     "morgan": "^1.10.0",
-    "nodemon": "^3.1.0",
     "passport": "^0.7.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
   }
 }

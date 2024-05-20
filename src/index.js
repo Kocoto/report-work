@@ -10,7 +10,6 @@ const passport = require("passport");
 const morgan = require("morgan");
 const db = require("./config/db");
 const swaggerUi = require("swagger-ui-express");
-const swaggerSpec = require("./ulti/swagger");
 const swaggerDocument = require("./ulti/swagger.json");
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
