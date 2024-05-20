@@ -5,4 +5,3 @@ const homeController = require("../app/controller/homeController");
 router.get("/", homeController.home);
 
 module.exports = router;
-// "start": "nodemon --inspect src/index.js",

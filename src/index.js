@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const PORT = 10000;
+const port = process.env.PORT || 10000;
 const route = require("./routes");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
@@ -64,6 +64,6 @@ db.connect();
 
 //route innit
 route(app);
-app.listen(PORT, () =>
-  console.log(`App listening at http://localhost:${PORT}`)
+app.listen(port, () =>
+  console.log(`App listening at http://localhost:${port}`)
 );
