@@ -12,7 +12,6 @@ function checkLogin(req, res, next) {
     }).then((data) => {
       if (data) {
         req.user = data;
-        console.log(req.user);
         return next();
       } else {
         res.status(401).send("vui lòng đăng nhập");

@@ -57,6 +57,15 @@ class CreateAccountController {
       res.status(500).send({ message: "lỗi sever" });
     }
   }
+  async detail(req, res) {
+    try {
+      const idUser = req.query.id;
+      const detailUser = await UserModel.findById(idUser);
+      res.status(200).send(detailUser);
+    } catch (error) {
+      res.status(500).send({ message: "lỗi sever" });
+    }
+  }
 }
 
 module.exports = new CreateAccountController();

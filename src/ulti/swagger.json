@@ -254,6 +254,35 @@
           }
         }
       }
+    },
+    "/user/detail": {
+      "get": {
+        "summary": "User's information",
+        "tags": ["Users"],
+        "description": "User's information",
+        "parameters": [
+          {
+            "name": "idUser",
+            "in": "query",
+            "description": " user's information",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Show user's information ",
+            "schema": {
+              "$ref": "#/definitions/EditUser"
+            }
+          },
+          "500": {
+            "description": "Error server when show user's information!!"
+          }
+        }
+      }
     }
   },
 
