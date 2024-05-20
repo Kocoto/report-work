@@ -2,6 +2,6 @@ const express = require("express");
 const router = express.Router();
 const exportController = require("../app/controller/exportController");
 
-router.get("/", exportController.export);
+router.post("/", exportController.export);
 
 module.exports = router;

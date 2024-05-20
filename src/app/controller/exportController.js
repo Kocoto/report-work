@@ -1,38 +1,13 @@
 const ReportModel = require("../models/report");
 const ExcelJS = require("exceljs");
-
+const NoteModel = require("../models/note");
 class ExportController {
   async export(req, res, next) {
-    const date = req.query.date;
+    const { date, note } = req.body;
     try {
+      const avc = await NoteModel.findOneAndUpdate({ note });
+      console.log(avc);
       const report = await ReportModel.find({ date });
-      // const report = [
-      //   {
-      //     date: null,
-      //     today: "ngủ",
-      //     tomorrow: "chơi",
-      //     __v: 0,
-      //   },
-      //   {
-      //     date: null,
-      //     today: "ngủ ádas",
-      //     tomorrow: "chơi ádasd",
-
-      //     __v: 0,
-      //   },
-      //   {
-      //     date: null,
-      //     today: "ngủ ádas",
-      //     tomorrow: "chơi ádasd",
-      //     __v: 0,
-      //   },
-      //   {
-      //     date: null,
-      //     today: "ngủ ádas",
-      //     tomorrow: "chơi ádasd",
-      //     __v: 0,
-      //   },
-      // ];
       if (report && report.length > 0) {
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Report");
