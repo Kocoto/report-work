@@ -5,7 +5,7 @@
     "title": "Report_work API",
     "description": ""
   },
-  "host": "https://report-work.onrender.com",
+  "host": "report-work.onrender.com",
   "tags": [
     {
       "name": "Users"
@@ -48,7 +48,7 @@
         }
       }
     },
-    "/export": {
+    "/export/download": {
       "post": {
         "summary": "Export report",
         "tags": ["Admin"],
@@ -105,6 +105,64 @@
           }
         }
       }
+    },
+    "/export": {
+      "get": {
+        "summary": "view report",
+        "tags": ["Admin"],
+        "description": "View Report information",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "description": "Date to export report",
+            "schema": {
+              "type": "Date"
+            }
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Login successfully",
+            "schema": {
+              "$ref": "#/definitions/Report"
+            }
+          },
+          "500": {
+            "description": "Error server when searching for report!!"
+          }
+        }
+      }
+    },
+    "/report": {
+      "post": {
+        "summary": "Submit report",
+        "tags": ["Users"],
+        "description": "User input report",
+        "parameters": [
+          {
+            "name": "report",
+            "in": "body",
+            "description": "report's information",
+            "schema": {
+              "$ref": "#/definitions/Report"
+            }
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Login successfully",
+            "schema": {
+              "$ref": "#/definitions/Report"
+            }
+          },
+          "500": {
+            "description": "Error server when searching for report!!"
+          }
+        }
+      }
     }
   },
 
@@ -135,16 +193,16 @@
         }
       }
     },
-    "report": {
+    "Report": {
       "properties": {
+        "date": {
+          "type": "string"
+        },
         "today": {
           "type": "string"
         },
         "tomorrow": {
           "type": "string"
-        },
-        "date": {
-          "type": "Date"
         }
       }
     }

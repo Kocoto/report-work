@@ -1,7 +1,9 @@
 class HomeController {
   home(req, res) {
-    const da = new Date();
-    console.log(da);
+    const date = req.query.date
+      ? req.query.date
+      : new Date().toLocaleDateString("en-GB");
+    console.log(date);
     res.send("testtttttttttttt");
   }
 }

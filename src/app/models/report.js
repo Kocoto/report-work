@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const reportSchema = new mongoose.Schema(
   {
-    date: Date,
+    date: String,
     today: String,
     tomorrow: String,
     name: String,

@@ -11,6 +11,11 @@ const morgan = require("morgan");
 const db = require("./config/db");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./ulti/swagger.json");
+const MongoDBStore = require("connect-mongodb-session")(session);
+const cors = require("cors");
+
+//connect DB
+db.connect();
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -46,9 +51,19 @@ app.use(express.json());
 //use cookie parser
 app.use(cookieParser());
 
+const store = new MongoDBStore({
+  uri: "mongodb+srv://reportwork:TvDip.J_ma_7wax@cluster0.grshbqi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+  collection: "sessions",
+});
+
+store.on("error", function (error) {
+  console.log("MongoDBStore error:", error);
+});
+
 //use express-session
 app.use(
   session({
+    store: store,
     secret: "pw",
     resave: false,
     saveUninitialized: true,
@@ -58,8 +73,7 @@ app.use(
   })
 );
 
-//connect DB
-db.connect();
+app.use(cors());
 
 //route innit
 route(app);

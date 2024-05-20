@@ -43,8 +43,16 @@ class ExportController {
     }
   }
 
-  export(req, res) {
-    const date = req.query.date ? req.query.date : new Date();
+  async export(req, res) {
+    try {
+      const date = req.query.date
+        ? req.query.date
+        : new Date().toLocaleDateString("en-GB");
+      const report = await ReportModel.find({ date: date });
+      res.status(200).send(report);
+    } catch (error) {
+      res.status(500).send("Lỗi sever khi tìm kiếm report");
+    }
   }
 }
 
