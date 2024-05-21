@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 
 class CreateAccountController {
   async create(req, res) {
-    const { password, username, role } = req.body;
+    const { name, msnv, password, username, role } = req.body;
     try {
       const user = await UserModel.findOne({ username: username });
       if (user) {
@@ -16,6 +16,8 @@ class CreateAccountController {
         password: hashPassword,
         username: username,
         role: role,
+        name,
+        msnv,
       });
       console.log(hashPassword);
       res.status(201).send("đã tạo người dùng mới thành công");

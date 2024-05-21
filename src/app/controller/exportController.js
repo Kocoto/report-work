@@ -2,6 +2,8 @@ const ReportModel = require("../models/report");
 const ExcelJS = require("exceljs");
 const NoteModel = require("../models/note");
 const path = require("path");
+const UserModel = require("../models/user");
+
 class ExportController {
   async download(req, res, next) {
     const { date, note } = req.body;
@@ -10,15 +12,19 @@ class ExportController {
         __dirname,
         "../../../daily report.xlsx"
       );
+      const countUser = await UserModel.countDocuments({ role: "user" });
+      const countReport = await ReportModel.countDocuments({ date: date });
+      const nonReport = countUser - countReport;
       const workbook = new ExcelJS.Workbook();
       await workbook.xlsx.readFile(templatePath);
       const report = await ReportModel.find({ date: date });
       const worksheet = workbook.getWorksheet(1);
       worksheet.getCell("A2").value = note;
       let rowIndex = 5;
-      await ReportModel.findByIdAndUpdate("664ab7fdb100b9b6e140b991", {
+      await NoteModel.findByIdAndUpdate("664ab7fdb100b9b6e140b991", {
         note,
       });
+
       report.forEach((report) => {
         const row = worksheet.getRow(rowIndex);
 
@@ -28,6 +34,25 @@ class ExportController {
         worksheet.getCell(`C${rowIndex}`).value = report.today;
         worksheet.getCell(`D${rowIndex}`).value = report.tomorrow;
 
+        // Thêm các hàng cho người không nộp báo cáo và tô màu xám
+        for (let i = 0; i < nonReport; i++) {
+          const row = worksheet.getRow(rowIndex);
+
+          // Đặt giá trị trống
+          worksheet.getCell(`A${rowIndex}`).value = "";
+          worksheet.getCell(`B${rowIndex}`).value = "";
+          worksheet.getCell(`C${rowIndex}`).value = "";
+          worksheet.getCell(`D${rowIndex}`).value = "";
+
+          // Tô màu xám
+          row.eachCell((cell) => {
+            cell.fill = {
+              type: "pattern",
+              pattern: "solid",
+              fgColor: { argb: "FFD3D3D3" }, // Màu xám nhạt
+            };
+          });
+        }
         //xuống dòng
         row.getCell("A").alignment = { wrapText: true };
         row.getCell("B").alignment = { wrapText: true };
