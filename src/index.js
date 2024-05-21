@@ -76,8 +76,6 @@ app.use(
   })
 );
 
-x;
-
 //route innit
 route(app);
 app.listen(port, () =>
