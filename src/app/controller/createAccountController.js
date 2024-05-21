@@ -24,7 +24,8 @@ class CreateAccountController {
     }
   }
   async edit(req, res) {
-    const { idUser, role, name, username, password, status } = req.body;
+    const { role, name, username, password, status } = req.body;
+    const idUser = req.body.id;
     try {
       if (req.body.password) {
         const hashPassword = await bcrypt.hash(password, 10);
@@ -35,7 +36,10 @@ class CreateAccountController {
           status,
           password: hashPassword,
         });
-        res.status(200).send(user);
+        console.log(user);
+        res
+          .status(200)
+          .send({ user, message: "Cập nhật người dùng thành công" });
       } else {
         const user = await UserModel.findByIdAndUpdate(idUser, {
           role,
@@ -43,7 +47,9 @@ class CreateAccountController {
           username,
           status,
         });
-        res.status(200).send(user);
+        res
+          .status(200)
+          .send({ user, message: "Cập nhật người dùng thành công" });
       }
     } catch (error) {
       res.status(500).send({ message: "lỗi sever" });
@@ -59,8 +65,10 @@ class CreateAccountController {
   }
   async detail(req, res) {
     try {
-      const idUser = req.query.id;
+      const idUser = req.query.idUser;
+      console.log(idUser);
       const detailUser = await UserModel.findById(idUser);
+      console.log(detailUser);
       res.status(200).send(detailUser);
     } catch (error) {
       res.status(500).send({ message: "lỗi sever" });

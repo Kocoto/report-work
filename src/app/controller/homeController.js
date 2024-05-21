@@ -1,9 +1,10 @@
+const UserModel = require("../models/user");
+
 class HomeController {
-  home(req, res) {
-    const date = req.query.date
-      ? req.query.date
-      : new Date().toLocaleDateString("en-GB");
-    console.log(date);
+  async home(req, res) {
+    const id = "664afe0f0c2fb88d4a96b93e";
+    const user = await UserModel.findByIdAndUpdate(id);
+    console.log(user);
     res.send("testtttttttttttt");
   }
 }

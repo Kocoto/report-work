@@ -4,7 +4,7 @@ const UserModel = require("../models/user");
 class ReportController {
   async report(req, res, next) {
     try {
-      const idUser = req.a;
+      const idUser = req.body.idUser;
       const user = await UserModel.findById(idUser);
       const { date, today, tomorrow } = req.body;
 
@@ -17,7 +17,7 @@ class ReportController {
       });
       res.status(200).json({ report });
     } catch (error) {
-      res.status(500).send({ message: "lỗi sever" });
+      res.status(500).send({ message: "lỗi sever", error });
     }
   }
 
