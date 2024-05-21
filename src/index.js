@@ -17,6 +17,9 @@ const cors = require("cors");
 //connect DB
 db.connect();
 
+// Enable CORS for all routes
+app.use(cors());
+
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
@@ -73,7 +76,7 @@ app.use(
   })
 );
 
-app.use(cors());
+x;
 
 //route innit
 route(app);
