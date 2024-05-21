@@ -8,8 +8,24 @@
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "./src/routes/index.js"
+      "src": "/",
+      "dest": "./src/routes/home.js"
+    },
+    {
+      "src": "/user",
+      "dest": "./src/routes/createAccount.js"
+    },
+    {
+      "src": "/report",
+      "dest": "./src/routes/report.js"
+    },
+    {
+      "src": "/login",
+      "dest": "./src/routes/login.js"
+    },
+    {
+      "src": "/export",
+      "dest": "./src/routes/export.js"
     }
   ]
 }
