@@ -5,9 +5,18 @@ class ReportController {
   async report(req, res, next) {
     try {
       const idUser = req.body.idUser;
-      const user = await UserModel.findById(idUser);
       const { date, today, tomorrow } = req.body;
-
+      const user = await UserModel.findById(idUser);
+      const checkReport = await ReportModel.findOne({ date, idUser });
+      if (checkReport) {
+        const editReport = await ReportModel.findOneAndUpdate(
+          { date, idUser },
+          { note }
+        );
+        return res
+          .status(200)
+          .send({ message: "Báo cáo đã được chỉnh sửa", editReport });
+      }
       const report = await ReportModel.create({
         date: date,
         today: today,

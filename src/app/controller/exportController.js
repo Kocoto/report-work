@@ -5,42 +5,6 @@ const path = require("path");
 class ExportController {
   async download(req, res, next) {
     const { date, note } = req.body;
-    // try {
-    //   const avc = await NoteModel.findOneAndUpdate({ note });
-    //   console.log(avc);
-    //   const report = await ReportModel.find({ date });
-    //   if (report && report.length > 0) {
-    //     const workbook = new ExcelJS.Workbook();
-    //     const worksheet = workbook.addWorksheet("Report");
-    //     worksheet.columns = [
-    //       { header: "Nhân viên", key: "date", width: 30 },
-    //       { header: "Công việc hôm nay", key: "today", width: 50 },
-    //       { header: "Công việc ngày mai", key: "tomorrow", width: 50 },
-    //     ];
-    //     console.log(report);
-    //     worksheet.addRows(report);
-    //     // workbook.xlsx.writeFile("data.xlsx");
-    //     workbook.xlsx.writeBuffer().then((buffer) => {
-    //       // Gửi buffer về phía client
-    //       res.setHeader(
-    //         "Content-Type",
-    //         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    //       );
-    //       res.setHeader(
-    //         "Content-Disposition",
-    //         "attachment; filename=report.xlsx"
-    //       );
-    //       res.send(buffer);
-    //     });
-    //   } else {
-    //     res
-    //       .status(404)
-    //       .send({ message: "hiện tại không có báo được cập nhật" });
-    //   }
-    // } catch (error) {
-    //   console.error(error);
-    //   res.status(500).send({ message: "Lỗi khi tạo báo cáo Excel" });
-    // }
     try {
       const templatePath = path.resolve(
         __dirname,
@@ -52,11 +16,49 @@ class ExportController {
       const worksheet = workbook.getWorksheet(1);
       worksheet.getCell("A2").value = note;
       let rowIndex = 5;
+      await ReportModel.findByIdAndUpdate("664ab7fdb100b9b6e140b991", {
+        note,
+      });
       report.forEach((report) => {
+        const row = worksheet.getRow(rowIndex);
+
+        //đặt giá trị
         worksheet.getCell(`A${rowIndex}`).value = report.msnv;
         worksheet.getCell(`B${rowIndex}`).value = report.name;
         worksheet.getCell(`C${rowIndex}`).value = report.today;
         worksheet.getCell(`D${rowIndex}`).value = report.tomorrow;
+
+        //xuống dòng
+        row.getCell("A").alignment = { wrapText: true };
+        row.getCell("B").alignment = { wrapText: true };
+        row.getCell("C").alignment = { wrapText: true };
+        row.getCell("D").alignment = { wrapText: true };
+
+        //thiết lập viền
+        const borderStyle = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
+        };
+        worksheet.getCell(`A${rowIndex}`).border = borderStyle;
+        worksheet.getCell(`B${rowIndex}`).border = borderStyle;
+        worksheet.getCell(`C${rowIndex}`).border = borderStyle;
+        worksheet.getCell(`D${rowIndex}`).border = borderStyle;
+
+        //tính độ dài
+        const msnvLength = (report.msnv || "").toString().length;
+        const nameLength = (report.name || "").toString().length;
+        const todayLength = (report.today || "").toString().length;
+        const tomorrowLength = (report.tomorrow || "").toString().length;
+        const maxTextLength = Math.max(
+          msnvLength,
+          nameLength,
+          todayLength,
+          tomorrowLength
+        );
+        //thiết lập độ cao
+        row.height = Math.ceil(maxTextLength / 20) * 15; // Điều chỉnh hệ số nếu cần
         rowIndex++;
       });
       workbook.xlsx.writeBuffer().then((buffer) => {
@@ -71,7 +73,10 @@ class ExportController {
         );
         res.send(buffer);
       });
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: "Lỗi khi tạo báo cáo Excel" });
+    }
   }
 
   async export(req, res) {
