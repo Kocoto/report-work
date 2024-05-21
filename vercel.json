@@ -2,30 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "./src/index.js",
+      "src": "src/index.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/",
-      "dest": "./src/routes/home.js"
-    },
-    {
-      "src": "/user",
-      "dest": "./src/routes/createAccount.js"
-    },
-    {
-      "src": "/report",
-      "dest": "./src/routes/report.js"
-    },
-    {
-      "src": "/login",
-      "dest": "./src/routes/login.js"
-    },
-    {
-      "src": "/export",
-      "dest": "./src/routes/export.js"
+      "src": "/(.*)",
+      "dest": "src/index.js"
     }
   ]
 }
