@@ -5,7 +5,7 @@
     "title": "Report_work API",
     "description": ""
   },
-  "host": "localhost:10000/",
+  "host": "report-work.onrender.com",
   "tags": [
     {
       "name": "Users"

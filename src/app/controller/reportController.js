@@ -36,9 +36,10 @@ class ReportController {
       const date = req.query.date
         ? req.query.date
         : new Date().toLocaleDateString("en-GB");
-      const user = await ReportModel.findOne({ date: date, idUser: idUser });
-      console.log(user);
-      res.status(200).send(user);
+      const report = await ReportModel.findOne({ date: date, idUser: idUser });
+      console.log(date);
+      console.log(report);
+      res.status(200).send(report);
     } catch (error) {
       res.status(500).send({ message: "lỗi sever" });
     }
