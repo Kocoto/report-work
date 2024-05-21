@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const reportSchema = new mongoose.Schema(
+const Report = new mongoose.Schema(
   {
     date: String,
     today: String,
@@ -8,7 +8,7 @@ const reportSchema = new mongoose.Schema(
     name: String,
     idUser: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
+      ref: "user",
       required: true,
     },
   },
@@ -17,5 +17,5 @@ const reportSchema = new mongoose.Schema(
   }
 );
 
-const ReportSchema = mongoose.model("report", reportSchema);
-module.exports = ReportSchema;
+const ReportModel = mongoose.model("report", Report);
+module.exports = ReportModel;

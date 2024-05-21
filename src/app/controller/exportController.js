@@ -12,18 +12,62 @@ class ExportController {
         __dirname,
         "../../../daily report.xlsx"
       );
-      const countUser = await UserModel.countDocuments({ role: "user" });
+      const countUser = await UserModel.countDocuments();
       const countReport = await ReportModel.countDocuments({ date: date });
-      const nonReport = countUser - countReport;
+      const nonReport = countUser - 1 - countReport;
       const workbook = new ExcelJS.Workbook();
       await workbook.xlsx.readFile(templatePath);
-      const report = await ReportModel.find({ date: date });
+      const report = await ReportModel.find({ date: date }).sort({ msnv: 1 });
       const worksheet = workbook.getWorksheet(1);
       worksheet.getCell("A2").value = note;
       let rowIndex = 5;
       await NoteModel.findByIdAndUpdate("664ab7fdb100b9b6e140b991", {
         note,
       });
+
+      //tạo báo cáo trống cho người chưa báo cáo
+      UserModel.find({ role: "user" })
+        .then((users) => {
+          users.forEach((user) => {
+            ReportModel.findOne({ date: date, idUser: user._id })
+              .then((report) => {
+                if (!report) {
+                  ReportModel.create({
+                    date: date,
+                    today: "",
+                    tomorrow: "",
+                    name: user.name,
+                    idUser: user._id,
+                    msnv: user.msnv,
+                  }).catch((error) => {
+                    console.log(error);
+                    res
+                      .status(500)
+                      .send({
+                        error,
+                        message: "lỗi sever khi tạo báo cáo mới",
+                      });
+                  });
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+                res
+                  .status(500)
+                  .send({ error, message: "lỗi sever khi tạo báo cáo mới" });
+              });
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          res
+            .status(500)
+            .send({ error, message: "lỗi sever khi tạo báo cáo mới" });
+        });
+
+      //thiết lập danh sách những người cần báo cáo
+      const user = await UserModel.find({ role: "user" }).sort({ msnv: 1 });
+      console.log(user);
 
       report.forEach((report) => {
         const row = worksheet.getRow(rowIndex);
@@ -34,25 +78,6 @@ class ExportController {
         worksheet.getCell(`C${rowIndex}`).value = report.today;
         worksheet.getCell(`D${rowIndex}`).value = report.tomorrow;
 
-        // Thêm các hàng cho người không nộp báo cáo và tô màu xám
-        for (let i = 0; i < nonReport; i++) {
-          const row = worksheet.getRow(rowIndex);
-
-          // Đặt giá trị trống
-          worksheet.getCell(`A${rowIndex}`).value = "";
-          worksheet.getCell(`B${rowIndex}`).value = "";
-          worksheet.getCell(`C${rowIndex}`).value = "";
-          worksheet.getCell(`D${rowIndex}`).value = "";
-
-          // Tô màu xám
-          row.eachCell((cell) => {
-            cell.fill = {
-              type: "pattern",
-              pattern: "solid",
-              fgColor: { argb: "FFD3D3D3" }, // Màu xám nhạt
-            };
-          });
-        }
         //xuống dòng
         row.getCell("A").alignment = { wrapText: true };
         row.getCell("B").alignment = { wrapText: true };
