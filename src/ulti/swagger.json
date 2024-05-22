@@ -8,7 +8,16 @@
   "host": "report-work.onrender.com",
   "tags": [
     {
-      "name": "Users"
+      "name": "User"
+    },
+    {
+      "name": "Export"
+    },
+    {
+      "name": "Authentication"
+    },
+    {
+      "name": "Report"
     }
   ],
   "securityDefinitions": {
@@ -29,7 +38,7 @@
     "/user/create": {
       "post": {
         "summary": "add user",
-        "tags": ["Admin"],
+        "tags": ["User"],
         "description": "Admin add user",
         "parameters": [
           {
@@ -58,7 +67,7 @@
     "/export/download": {
       "post": {
         "summary": "Export report",
-        "tags": ["Admin"],
+        "tags": ["Export"],
         "description": "Admin export report",
         "parameters": [
           {
@@ -116,7 +125,7 @@
     "/export": {
       "get": {
         "summary": "view report",
-        "tags": ["Admin"],
+        "tags": ["Export"],
         "description": "View Report information",
         "parameters": [
           {
@@ -145,7 +154,7 @@
     "/report/input": {
       "post": {
         "summary": "Submit report",
-        "tags": ["Users"],
+        "tags": ["Report"],
         "description": "User input report",
         "parameters": [
           {
@@ -174,7 +183,7 @@
     "/report": {
       "get": {
         "summary": "Form submit report",
-        "tags": ["Users"],
+        "tags": ["Report"],
         "description": "User input report",
         "parameters": [
           {
@@ -211,7 +220,7 @@
     "/user": {
       "get": {
         "summary": "get all user",
-        "tags": ["Admin"],
+        "tags": ["User"],
         "description": "User's information",
         "responses": {
           "200": {
@@ -229,7 +238,7 @@
     "/user/edit": {
       "put": {
         "summary": "Edit user",
-        "tags": ["Admin"],
+        "tags": ["User"],
         "description": "Edit user's information",
         "parameters": [
           {
@@ -258,7 +267,7 @@
     "/user/detail": {
       "get": {
         "summary": "User's information",
-        "tags": ["Admin"],
+        "tags": ["User"],
         "description": "User's information",
         "parameters": [
           {
@@ -280,6 +289,64 @@
           },
           "500": {
             "description": "Error server when show user's information!!"
+          }
+        }
+      }
+    },
+    "/report/edit": {
+      "put": {
+        "summary": "Report's information",
+        "tags": ["Report"],
+        "description": "Report's information",
+        "parameters": [
+          {
+            "name": "idUser",
+            "in": "body",
+            "description": "Report's information",
+            "schema": {
+              "$ref": "#/definitions/EditReport"
+            }
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Edit report successfully ",
+            "schema": {
+              "$ref": "#/definitions/Report"
+            }
+          },
+          "500": {
+            "description": "Error server when Edit report !!"
+          }
+        }
+      }
+    },
+    "/export/update": {
+      "put": {
+        "summary": "Update note",
+        "tags": ["Export"],
+        "description": "Admin update note",
+        "parameters": [
+          {
+            "name": "note",
+            "in": "body",
+            "description": "Note's information",
+            "schema": {
+              "$ref": "#/definitions/Note"
+            }
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Update note successfully ",
+            "schema": {
+              "$ref": "#/definitions/Note"
+            }
+          },
+          "500": {
+            "description": "Error server when Update note!!"
           }
         }
       }
@@ -384,6 +451,29 @@
         "date": {
           "type": "string"
         },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "EditReport": {
+      "properties": {
+        "idUser": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string"
+        },
+        "today": {
+          "type": "string"
+        },
+        "tomorrow": {
+          "type": "string"
+        }
+      }
+    },
+    "Note": {
+      "properties": {
         "note": {
           "type": "string"
         }

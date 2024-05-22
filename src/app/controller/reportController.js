@@ -5,13 +5,13 @@ class ReportController {
   async report(req, res, next) {
     try {
       const idUser = req.body.idUser;
-      const { date, today, tomorrow } = req.body;
+      const { date, msnv } = req.body;
       const user = await UserModel.findById(idUser);
       const checkReport = await ReportModel.findOne({ date, idUser });
       if (checkReport) {
         const editReport = await ReportModel.findOneAndUpdate(
           { date, idUser },
-          { note }
+          { today, tomorrow }
         );
         return res
           .status(200)
@@ -23,8 +23,44 @@ class ReportController {
         tomorrow: tomorrow,
         name: user.name,
         idUser: idUser,
+        msnv: user.msnv,
       });
       res.status(200).json({ report });
+    } catch (error) {
+      res.status(500).send({ message: "lỗi sever", error });
+    }
+  }
+
+  async editReport(req, res) {
+    try {
+      const idUser = req.body.idUser;
+      const { date, today, tomorrow } = req.body;
+      const user = await UserModel.findById(idUser);
+      const checkReport = await ReportModel.findOne({ date, idUser });
+      if (!checkReport) {
+        const createReport = await ReportModel.create({
+          date,
+          idUser,
+          today,
+          tomorrow,
+          name: user.name,
+          msnv: user.msnv,
+        });
+        return res
+          .status(200)
+          .send({ message: "Báo cáo đã được lưu", createReport });
+      }
+      const report = await ReportModel.findOneAndUpdate(
+        {
+          date: date,
+          idUser: idUser,
+        },
+        {
+          today: today,
+          tomorrow: tomorrow,
+        }
+      );
+      return res.status(200).send({ message: "Báo cáo đã được lưu", report });
     } catch (error) {
       res.status(500).send({ message: "lỗi sever", error });
     }

@@ -41,12 +41,10 @@ class ExportController {
                     msnv: user.msnv,
                   }).catch((error) => {
                     console.log(error);
-                    res
-                      .status(500)
-                      .send({
-                        error,
-                        message: "lỗi sever khi tạo báo cáo mới",
-                      });
+                    res.status(500).send({
+                      error,
+                      message: "lỗi sever khi tạo báo cáo mới",
+                    });
                   });
                 }
               })
@@ -129,13 +127,32 @@ class ExportController {
     }
   }
 
+  async updateNote(req, res) {
+    try {
+      const { note } = req.body;
+      const updatedNote = await NoteModel.findByIdAndUpdate(
+        "664ab7fdb100b9b6e140b991",
+        {
+          note,
+        }
+      );
+      res
+        .status(200)
+        .send({ updatedNote, message: "Cập nhật note thành công" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: "Lỗi khi cập nhật note" });
+    }
+  }
+
   async export(req, res) {
     try {
+      const note = await NoteModel.findById("664ab7fdb100b9b6e140b991");
       const date = req.query.date
         ? req.query.date
         : new Date().toLocaleDateString("en-GB");
       const report = await ReportModel.find({ date: date });
-      res.status(200).send(report);
+      res.status(200).send({ report, note });
     } catch (error) {
       res.status(500).send("Lỗi sever khi tìm kiếm report");
     }
