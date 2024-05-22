@@ -6,17 +6,30 @@ function checkLogin(req, res, next) {
   //check
   try {
     // const token = req.headers.authorization?.split(" ")[1];
-    const token = req.cookies.tokenLogin;
-    var idUser = jwt.verify(token, "PW");
-    UserModel.findOne({
-      _id: idUser,
-    }).then((data) => {
-      if (data) {
-        req.user = data;
-        return next();
-      } else {
-        res.status(401).send("vui lòng đăng nhập");
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({ message: "Missing token" });
+    }
+    const tokenWithoutBearer = token.split(" ")[1];
+
+    jwt.verify(tokenWithoutBearer, "PW", (err, decoded) => {
+      if (err) {
+        return res.status(403).json({ message: "Invalid token" });
       }
+      UserModel.findOne({
+        _id: decoded,
+      }).then((data) => {
+        if (data) {
+          req.user = data;
+          console.log(
+            "đã xác thực thành cônggggggggggggggggggggggggggggggggggg" +
+              req.user
+          );
+          return next();
+        } else {
+          res.status(401).send("vui lòng đăng nhập");
+        }
+      });
     });
   } catch (err) {
     res.status(401).send("vui lòng đăng nhập");
