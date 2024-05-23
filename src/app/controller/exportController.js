@@ -65,11 +65,10 @@ class ExportController {
 
       //thiết lập danh sách những người cần báo cáo
       const user = await UserModel.find({ role: "user" }).sort({ msnv: 1 });
-      console.log(user);
 
       report.forEach((report) => {
         const row = worksheet.getRow(rowIndex);
-
+        row.height = undefined;
         //đặt giá trị
         worksheet.getCell(`A${rowIndex}`).value = report.msnv;
         worksheet.getCell(`B${rowIndex}`).value = report.name;
@@ -105,8 +104,29 @@ class ExportController {
           todayLength,
           tomorrowLength
         );
-        //thiết lập độ cao
-        row.height = Math.ceil(maxTextLength / 20) * 15; // Điều chỉnh hệ số nếu cần
+
+        //căn chỉnh văn bản
+        worksheet.getCell(`A${rowIndex}`).alignment = {
+          horizontal: "center",
+          vertical: "middle",
+          wrapText: true,
+        };
+        worksheet.getCell(`B${rowIndex}`).alignment = {
+          horizontal: "center",
+          vertical: "middle",
+          wrapText: true,
+        };
+        worksheet.getCell(`C${rowIndex}`).alignment = {
+          horizontal: "center",
+          vertical: "middle",
+          wrapText: true,
+        };
+        worksheet.getCell(`D${rowIndex}`).alignment = {
+          horizontal: "center",
+          vertical: "middle",
+          wrapText: true,
+        };
+
         rowIndex++;
       });
       workbook.xlsx.writeBuffer().then((buffer) => {

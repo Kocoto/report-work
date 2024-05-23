@@ -5,7 +5,7 @@
     "title": "Report_work API",
     "description": ""
   },
-  "host": "report-work.onrender.com",
+  "host": "localhost:10000",
   "tags": [
     {
       "name": "User"
@@ -162,7 +162,7 @@
             "in": "body",
             "description": "report's information",
             "schema": {
-              "$ref": "#/definitions/Report"
+              "$ref": "#/definitions/InputReport"
             }
           }
         ],
@@ -409,6 +409,9 @@
         "role": {
           "type": "string"
         },
+        "msnv": {
+          "type": "string"
+        },
         "password": {
           "type": "string"
         }
@@ -433,6 +436,22 @@
           "type": "string"
         },
         "name": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string"
+        },
+        "today": {
+          "type": "string"
+        },
+        "tomorrow": {
+          "type": "string"
+        }
+      }
+    },
+    "InputReport": {
+      "properties": {
+        "idUser": {
           "type": "string"
         },
         "date": {

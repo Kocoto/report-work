@@ -5,7 +5,7 @@ class ReportController {
   async report(req, res, next) {
     try {
       const idUser = req.body.idUser;
-      const { date, msnv } = req.body;
+      const { date, today, tomorrow } = req.body;
       const user = await UserModel.findById(idUser);
       const checkReport = await ReportModel.findOne({ date, idUser });
       if (checkReport) {
@@ -25,7 +25,7 @@ class ReportController {
         idUser: idUser,
         msnv: user.msnv,
       });
-      res.status(200).json({ report });
+      res.status(200).send({ message: "Báo cáo đã được lưu", report });
     } catch (error) {
       res.status(500).send({ message: "lỗi sever", error });
     }
