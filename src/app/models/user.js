@@ -12,6 +12,7 @@ const User = new mongoose.Schema(
     },
     name: String,
     msnv: String,
+    avatar: String,
   },
   {
     timestamps: true,

@@ -3,32 +3,35 @@
   "info": {
     "version": "1.0.0",
     "title": "Report_work API",
-    "description": ""
+    "description": "API for managing reports, users, and authentication."
   },
   "host": "report-work.onrender.com",
   "tags": [
     {
-      "name": "User"
+      "name": "User",
+      "description": "Operations related to users"
     },
     {
-      "name": "Export"
+      "name": "Export",
+      "description": "Operations related to exporting reports"
     },
     {
-      "name": "Authentication"
+      "name": "Authentication",
+      "description": "Operations related to user authentication"
     },
     {
-      "name": "Report"
+      "name": "Report",
+      "description": "Operations related to reports"
     }
   ],
   "securityDefinitions": {
     "Bearer": {
       "type": "apiKey",
-      "description": "JWT Authorization header using the Bearer scheme. \\r\\n\\r\\n\r\n            Enter 'Bearer' [space] and then your token in the text input below.\r\n            \\r\\n\\r\\nExample: 'Bearer 12345abcdef'",
+      "description": "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below. Example: 'Bearer 12345abcdef'",
       "name": "Authorization",
       "in": "header"
     }
   },
-
   "security": [
     {
       "Bearer": []
@@ -37,29 +40,39 @@
   "paths": {
     "/user/create": {
       "post": {
-        "summary": "add user",
+        "summary": "Create a new user",
         "tags": ["User"],
-        "description": "Admin add user",
+        "description": "API to create a new user by an admin.",
         "parameters": [
           {
-            "name": "user information",
             "in": "body",
-            "description": "Admin add user",
+            "name": "body",
+            "description": "User information to create",
+            "required": true,
             "schema": {
-              "$ref": "#/definitions/User"
+              "$ref": "#/definitions/UserInput"
             }
           }
         ],
         "produces": ["application/json"],
         "responses": {
           "201": {
-            "description": "Add user success",
+            "description": "New user created successfully.",
             "schema": {
-              "$ref": "#/definitions/User"
+              "$ref": "#/definitions/UserResponse"
+            }
+          },
+          "409": {
+            "description": "Username already exists.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
             }
           },
           "500": {
-            "description": "Add user failed!!"
+            "description": "Server error when creating a new user.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
           }
         }
       }
@@ -68,27 +81,33 @@
       "post": {
         "summary": "Export report",
         "tags": ["Export"],
-        "description": "Admin export report",
+        "description": "Admin exports a report",
         "parameters": [
           {
-            "name": "date",
             "in": "body",
-            "description": "Date to export report",
+            "name": "body",
+            "description": "Date and optional note for the report to be exported",
+            "required": true,
             "schema": {
               "$ref": "#/definitions/ReportDownload"
             }
           }
         ],
-        "produces": ["application/json"],
+        "produces": [
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        ],
         "responses": {
           "200": {
-            "description": "Downloaded excel file successfully"
+            "description": "Excel file downloaded successfully",
+            "schema": {
+              "type": "file"
+            }
           },
           "404": {
-            "description": "No reports found for this date!!"
+            "description": "No reports found for this date."
           },
           "500": {
-            "description": "Error while generating report!!"
+            "description": "Error while generating report."
           }
         }
       }
@@ -100,9 +119,10 @@
         "description": "User login",
         "parameters": [
           {
-            "name": "username",
             "in": "body",
-            "description": "Username of user",
+            "name": "body",
+            "description": "Credentials required for login",
+            "required": true,
             "schema": {
               "$ref": "#/definitions/Login"
             }
@@ -111,42 +131,71 @@
         "produces": ["application/json"],
         "responses": {
           "200": {
-            "description": "Login successfully"
+            "description": "Logged in successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Đăng nhập thành công"
+                },
+                "token": {
+                  "type": "string",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                },
+                "data": {
+                  "$ref": "#/definitions/User"
+                }
+              }
+            }
           },
           "404": {
-            "description": "No user found!!"
+            "description": "User not found.",
+            "schema": {
+              "type": "string",
+              "example": "Không tìm thấy người dùng"
+            }
           },
           "500": {
-            "description": "Error when login!!"
+            "description": "Error during login or password comparison",
+            "schema": {
+              "type": "string",
+              "example": "lỗi khi so sánh mật khẩu hoặc lỗi server"
+            }
           }
         }
       }
     },
     "/export": {
       "get": {
-        "summary": "view report",
+        "summary": "View report",
         "tags": ["Export"],
-        "description": "View Report information",
+        "description": "View report information",
         "parameters": [
           {
             "name": "date",
             "in": "query",
-            "description": "Date to export report",
-            "schema": {
-              "type": "Date"
-            }
+            "description": "Date for the report in format YYYY-MM-DD",
+            "required": false,
+            "type": "string",
+            "format": "date",
+            "example": "2023-09-15"
           }
         ],
         "produces": ["application/json"],
         "responses": {
           "200": {
-            "description": "Login successfully",
+            "description": "Report information retrieved successfully",
             "schema": {
               "$ref": "#/definitions/Report"
             }
           },
           "500": {
-            "description": "Error server when searching for report!!"
+            "description": "Server error when searching for report."
           }
         }
       }
@@ -155,12 +204,13 @@
       "post": {
         "summary": "Submit report",
         "tags": ["Report"],
-        "description": "User input report",
+        "description": "User submits a report",
         "parameters": [
           {
-            "name": "report",
             "in": "body",
-            "description": "report's information",
+            "name": "body",
+            "description": "Information of the report",
+            "required": true,
             "schema": {
               "$ref": "#/definitions/InputReport"
             }
@@ -169,13 +219,34 @@
         "produces": ["application/json"],
         "responses": {
           "200": {
-            "description": "Login successfully",
+            "description": "Report submitted successfully",
             "schema": {
-              "$ref": "#/definitions/Report"
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Báo cáo đã được lưu"
+                },
+                "report": {
+                  "$ref": "#/definitions/ReportDetail"
+                }
+              }
             }
           },
           "500": {
-            "description": "Error server when searching for report!!"
+            "description": "Server error when submitting report.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "lỗi sever"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -184,53 +255,54 @@
       "get": {
         "summary": "Form submit report",
         "tags": ["Report"],
-        "description": "User input report",
+        "description": "User retrieves a report",
         "parameters": [
           {
             "name": "date",
             "in": "query",
-            "description": "report's date",
-            "schema": {
-              "type": "string"
-            }
+            "description": "Date of the report in format YYYY-MM-DD",
+            "required": false,
+            "type": "string",
+            "format": "date",
+            "example": "2023-09-15"
           },
           {
             "name": "idUser",
             "in": "query",
-            "description": "user's id",
-            "schema": {
-              "type": "string"
-            }
+            "description": "User's ID",
+            "required": false,
+            "type": "string",
+            "example": "5f8d04b3bcfd1312d4a1c8b1"
           }
         ],
         "produces": ["application/json"],
         "responses": {
           "200": {
-            "description": "Login successfully",
+            "description": "Report form retrieved successfully",
             "schema": {
-              "$ref": "#/definitions/Report"
+              "$ref": "#/definitions/ReportDetail"
             }
           },
           "500": {
-            "description": "Error server when searching for report!!"
+            "description": "Server error when retrieving report form."
           }
         }
       }
     },
     "/user": {
       "get": {
-        "summary": "get all user",
+        "summary": "Get all users",
         "tags": ["User"],
-        "description": "User's information",
+        "description": "Retrieve all user information",
         "responses": {
           "200": {
-            "description": "Login successfully",
+            "description": "All user information retrieved successfully",
             "schema": {
               "$ref": "#/definitions/AllUser"
             }
           },
           "500": {
-            "description": "lỗi sever"
+            "description": "Server error."
           }
         }
       }
@@ -239,12 +311,13 @@
       "put": {
         "summary": "Edit user",
         "tags": ["User"],
-        "description": "Edit user's information",
+        "description": "Edit user information",
         "parameters": [
           {
-            "name": "user",
             "in": "body",
-            "description": " user's information",
+            "name": "user",
+            "description": "User information to be edited",
+            "required": true,
             "schema": {
               "$ref": "#/definitions/EditUser"
             }
@@ -253,13 +326,31 @@
         "produces": ["application/json"],
         "responses": {
           "200": {
-            "description": "Login successfully",
+            "description": "User information edited successfully",
             "schema": {
-              "$ref": "#/definitions/EditUser"
+              "type": "object",
+              "properties": {
+                "user": {
+                  "$ref": "#/definitions/UserDetail"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Cập nhật người dùng thành công"
+                }
+              }
             }
           },
           "500": {
-            "description": "Error server when edit user!!"
+            "description": "Server error when editing user information.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "lỗi sever"
+                }
+              }
+            }
           }
         }
       }
@@ -268,41 +359,51 @@
       "get": {
         "summary": "User's information",
         "tags": ["User"],
-        "description": "User's information",
+        "description": "Retrieve user's detailed information",
         "parameters": [
           {
             "name": "idUser",
             "in": "query",
-            "description": " user's information",
-            "schema": {
-              "type": "string"
-            }
+            "description": "User's ID to retrieve detailed information",
+            "required": true,
+            "type": "string",
+            "example": "5f8d04b3bcfd1312d4a1c8b1"
           }
         ],
         "produces": ["application/json"],
         "responses": {
           "200": {
-            "description": "Show user's information ",
+            "description": "User's information displayed successfully",
             "schema": {
-              "$ref": "#/definitions/EditUser"
+              "$ref": "#/definitions/UserDetail"
             }
           },
           "500": {
-            "description": "Error server when show user's information!!"
+            "description": "Server error when displaying user's information.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "lỗi sever"
+                }
+              }
+            }
           }
         }
       }
     },
     "/report/edit": {
       "put": {
-        "summary": "Report's information",
+        "summary": "Edit report",
         "tags": ["Report"],
-        "description": "Report's information",
+        "description": "Edit report information",
         "parameters": [
           {
-            "name": "idUser",
             "in": "body",
-            "description": "Report's information",
+            "name": "report",
+            "description": "Report information to be edited",
+            "required": true,
             "schema": {
               "$ref": "#/definitions/EditReport"
             }
@@ -311,13 +412,34 @@
         "produces": ["application/json"],
         "responses": {
           "200": {
-            "description": "Edit report successfully ",
+            "description": "Report edited successfully",
             "schema": {
-              "$ref": "#/definitions/Report"
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Báo cáo đã được lưu"
+                },
+                "report": {
+                  "$ref": "#/definitions/ReportDetail"
+                }
+              }
             }
           },
           "500": {
-            "description": "Error server when Edit report !!"
+            "description": "Server error when editing report.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "lỗi sever"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -326,12 +448,13 @@
       "put": {
         "summary": "Update note",
         "tags": ["Export"],
-        "description": "Admin update note",
+        "description": "Admin updates a note",
         "parameters": [
           {
-            "name": "note",
             "in": "body",
-            "description": "Note's information",
+            "name": "note",
+            "description": "Note information to be updated",
+            "required": true,
             "schema": {
               "$ref": "#/definitions/Note"
             }
@@ -340,13 +463,31 @@
         "produces": ["application/json"],
         "responses": {
           "200": {
-            "description": "Update note successfully ",
+            "description": "Note updated successfully",
             "schema": {
-              "$ref": "#/definitions/Note"
+              "type": "object",
+              "properties": {
+                "updatedNote": {
+                  "$ref": "#/definitions/Note"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Cập nhật note thành công"
+                }
+              }
             }
           },
           "500": {
-            "description": "Error server when Update note!!"
+            "description": "Server error when updating note.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Lỗi khi cập nhật note"
+                }
+              }
+            }
           }
         }
       }
@@ -354,147 +495,257 @@
   },
 
   "definitions": {
-    "EditUser": {
+    "UserInput": {
+      "type": "object",
+      "required": ["username", "password", "name", "role"],
       "properties": {
-        "id": {
-          "type": "string"
-        },
         "username": {
-          "type": "string"
-        },
-        "status": {
-          "type": "string"
-        },
-        "msnv": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "role": {
-          "type": "string"
+          "type": "string",
+          "example": "user123"
         },
         "password": {
-          "type": "string"
-        }
-      }
-    },
-    "AllUser": {
-      "properties": {
-        "username": {
-          "type": "string"
-        },
-        "status": {
-          "type": "string"
-        },
-        "msnv": {
-          "type": "string"
+          "type": "string",
+          "example": "p@ssw0rd"
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "example": "Nguyen Van A"
         },
         "role": {
-          "type": "string"
+          "type": "string",
+          "example": "admin"
+        },
+        "msnv": {
+          "type": "string",
+          "example": "ckd001"
+        },
+        "avatar": {
+          "type": "string",
+          "example": "http://example.com/avatar.jpg"
         }
       }
     },
-    "User": {
+    "UserResponse": {
+      "type": "object",
       "properties": {
         "username": {
-          "type": "string"
+          "type": "string",
+          "example": "user123"
         },
         "name": {
-          "type": "string"
+          "type": "string",
+          "example": "Nguyen Van A"
         },
         "role": {
-          "type": "string"
+          "type": "string",
+          "example": "admin"
         },
         "msnv": {
-          "type": "string"
+          "type": "string",
+          "example": "ckd001"
         },
-        "password": {
-          "type": "string"
+        "avatar": {
+          "type": "string",
+          "example": "http://example.com/avatar.jpg"
         }
       }
     },
-    "Login": {
+    "ErrorResponse": {
+      "type": "object",
       "properties": {
-        "username": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        }
-      }
-    },
-    "Report": {
-      "properties": {
-        "idUser": {
-          "type": "string"
-        },
-        "msnv": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "date": {
-          "type": "string"
-        },
-        "today": {
-          "type": "string"
-        },
-        "tomorrow": {
-          "type": "string"
-        }
-      }
-    },
-    "InputReport": {
-      "properties": {
-        "idUser": {
-          "type": "string"
-        },
-        "date": {
-          "type": "string"
-        },
-        "today": {
-          "type": "string"
-        },
-        "tomorrow": {
-          "type": "string"
+        "message": {
+          "type": "string",
+          "example": "An error occurred while creating a new user"
         }
       }
     },
     "ReportDownload": {
+      "type": "object",
+      "required": ["date"],
       "properties": {
         "date": {
-          "type": "string"
+          "type": "string",
+          "format": "date",
+          "example": "2023-09-15"
         },
         "note": {
-          "type": "string"
+          "type": "string",
+          "example": "Ghi chú cho báo cáo"
+        }
+      }
+    },
+    "Login": {
+      "type": "object",
+      "required": ["username", "password"],
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "user123"
+        },
+        "password": {
+          "type": "string",
+          "example": "p@ssw0rd"
+        }
+      }
+    },
+    "Report": {
+      "type": "object",
+      "properties": {
+        "report": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ReportDetail"
+          }
+        },
+        "note": {
+          "type": "string",
+          "example": "Ghi chú cho báo cáo"
+        }
+      }
+    },
+    "InputReport": {
+      "type": "object",
+      "required": ["idUser", "date", "today", "tomorrow"],
+      "properties": {
+        "idUser": {
+          "type": "string",
+          "example": "5f8d04b3bcfd1312d4a1c8b1"
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "example": "2023-09-15"
+        },
+        "today": {
+          "type": "string",
+          "example": "Hoàn thành công việc X"
+        },
+        "tomorrow": {
+          "type": "string",
+          "example": "Bắt đầu công việc Y"
+        }
+      }
+    },
+    "ReportDetail": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "example": "2023-09-15"
+        },
+        "idUser": {
+          "type": "string",
+          "example": "5f8d04b3bcfd1312d4a1c8b1"
+        },
+        "today": {
+          "type": "string",
+          "example": "Hoàn thành công việc X"
+        },
+        "tomorrow": {
+          "type": "string",
+          "example": "Bắt đầu công việc Y"
+        },
+        "name": {
+          "type": "string",
+          "example": "Nguyen Van A"
+        },
+        "msnv": {
+          "type": "string",
+          "example": "ckd001"
+        }
+      }
+    },
+    "AllUser": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/UserDetail"
+      }
+    },
+    "UserDetail": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "user123"
+        },
+        "name": {
+          "type": "string",
+          "example": "Nguyen Van A"
+        },
+        "role": {
+          "type": "string",
+          "example": "admin"
+        },
+        "msnv": {
+          "type": "string",
+          "example": "ckd001"
+        },
+        "avatar": {
+          "type": "string",
+          "example": "http://example.com/avatar.jpg"
+        }
+      }
+    },
+    "EditUser": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "5f8d04b3bcfd1312d4a1c8b1"
+        },
+        "role": {
+          "type": "string",
+          "example": "admin"
+        },
+        "name": {
+          "type": "string",
+          "example": "Nguyen Van A"
+        },
+        "username": {
+          "type": "string",
+          "example": "user123"
+        },
+        "password": {
+          "type": "string",
+          "example": "newpassword"
+        },
+        "status": {
+          "type": "string",
+          "example": "active"
         }
       }
     },
     "EditReport": {
+      "type": "object",
+      "required": ["idUser", "date", "today", "tomorrow"],
       "properties": {
         "idUser": {
-          "type": "string"
+          "type": "string",
+          "example": "5f8d04b3bcfd1312d4a1c8b1"
         },
         "date": {
-          "type": "string"
+          "type": "string",
+          "format": "date",
+          "example": "2023-09-15"
         },
         "today": {
-          "type": "string"
+          "type": "string",
+          "example": "Hoàn thành công việc X"
         },
         "tomorrow": {
-          "type": "string"
+          "type": "string",
+          "example": "Bắt đầu công việc Y"
         }
       }
     },
     "Note": {
+      "type": "object",
+      "required": ["note"],
       "properties": {
         "note": {
-          "type": "string"
+          "type": "string",
+          "example": "Thông tin quan trọng cần cập nhật"
         }
       }
     }

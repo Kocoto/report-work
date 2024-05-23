@@ -1,51 +1,48 @@
 const jwt = require("jsonwebtoken");
 const UserModel = require("../app/models/user");
 
-//check login
+// Kiểm tra đăng nhập
 function checkLogin(req, res, next) {
-  //check
   try {
-    // const token = req.headers.authorization?.split(" ")[1];
-    const token = req.headers.authorization;
+    const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
-      return res.status(401).json({ message: "Missing token" });
+      return res.status(401).json({ message: "Token không tồn tại" });
     }
-    const tokenWithoutBearer = token.split(" ")[1];
 
-    jwt.verify(tokenWithoutBearer, "PW", (err, decoded) => {
+    jwt.verify(token, "PW", (err, decoded) => {
       if (err) {
-        return res.status(403).json({ message: "Invalid token" });
+        return res.status(403).json({ message: "Token không hợp lệ" });
       }
-      UserModel.findOne({
-        _id: decoded,
-      }).then((data) => {
-        if (data) {
-          req.user = data;
-          console.log(
-            "đã xác thực thành cônggggggggggggggggggggggggggggggggggg" +
-              req.user
-          );
-          return next();
-        } else {
-          res.status(401).send("vui lòng đăng nhập");
-        }
-      });
+      UserModel.findById(decoded._id)
+        .then((user) => {
+          if (user) {
+            req.user = user;
+            console.log("Xác thực người dùng thành công: " + req.user);
+            next();
+          } else {
+            return res.status(401).send("Vui lòng đăng nhập lại");
+          }
+        })
+        .catch((err) => {
+          return res.status(500).send("Lỗi khi truy vấn người dùng");
+        });
     });
   } catch (err) {
-    res.status(401).send("vui lòng đăng nhập");
+    return res.status(500).send("Lỗi xử lý token");
   }
 }
 
+// Kiểm tra quyền admin
 function checkAdmin(req, res, next) {
   try {
     const role = req.user.role;
     if (role === "admin") {
       next();
     } else {
-      return res.status(409).send({ message: "Bạn không đủ quyền truy cập" });
+      return res.status(403).json({ message: "Không có quyền truy cập" });
     }
   } catch (error) {
-    return res.status(500).send("Đã xảy ra lỗi: " + err);
+    return res.status(500).send("Đã xảy ra lỗi: " + error.message);
   }
 }
 module.exports = { checkLogin, checkAdmin };

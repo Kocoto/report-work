@@ -3,74 +3,80 @@ const bcrypt = require("bcrypt");
 
 class CreateAccountController {
   async create(req, res) {
-    const { name, msnv, password, username, role } = req.body;
+    const { name, password, username, role } = req.body;
     try {
-      const user = await UserModel.findOne({ username: username });
-      if (user) {
+      const userExists = await UserModel.findOne({ username: username });
+      if (userExists) {
         return res.status(409).json({
           message: "Username đã tồn tại",
         });
       }
+
+      const lastUser = await UserModel.findOne().sort({ msnv: -1 });
+      let newMsnv = "ckd001";
+      if (lastUser && lastUser.msnv) {
+        const lastNumber = parseInt(lastUser.msnv.substring(3)) + 1;
+        newMsnv = `ckd${lastNumber.toString().padStart(3, "0")}`;
+      }
+
+      const msnv = req.body.msnv || newMsnv;
       const hashPassword = await bcrypt.hash(password, 10);
+      const avatarUrl = req.cloudinaryUrl || null;
+
       await UserModel.create({
-        password: hashPassword,
-        username: username,
-        role: role,
         name,
+        username,
+        password: hashPassword,
+        role,
         msnv,
+        avatar: avatarUrl,
       });
-      console.log(hashPassword);
+
       res.status(201).send("đã tạo người dùng mới thành công");
     } catch (error) {
-      res.status(500).send("đã xảy ra lỗi khi tạo người dùng mới ");
+      res.status(500).send("đã xảy ra lỗi khi tạo người dùng mới");
     }
   }
+
   async edit(req, res) {
-    const { role, name, username, password, status } = req.body;
-    const idUser = req.body.id;
+    const { role, name, username, password, status, id } = req.body;
     try {
-      if (req.body.password) {
-        const hashPassword = await bcrypt.hash(password, 10);
-        const user = await UserModel.findByIdAndUpdate(idUser, {
-          role,
-          name,
-          username,
-          status,
-          password: hashPassword,
-        });
-        console.log(user);
-        res
-          .status(200)
-          .send({ user, message: "Cập nhật người dùng thành công" });
-      } else {
-        const user = await UserModel.findByIdAndUpdate(idUser, {
-          role,
-          name,
-          username,
-          status,
-        });
-        res
-          .status(200)
-          .send({ user, message: "Cập nhật người dùng thành công" });
+      const updateData = {
+        role,
+        name,
+        username,
+        status,
+      };
+
+      if (password) {
+        updateData.password = await bcrypt.hash(password, 10);
       }
+
+      const updatedUser = await UserModel.findByIdAndUpdate(id, updateData, {
+        new: true,
+      });
+      res.status(200).json({
+        user: updatedUser,
+        message: "Cập nhật người dùng thành công",
+      });
     } catch (error) {
-      res.status(500).send({ message: "lỗi sever" });
+      res.status(500).json({ message: "lỗi sever" });
     }
   }
+
   async user(req, res) {
     try {
-      const user = await UserModel.find();
-      res.status(200).send(user);
+      const users = await UserModel.find();
+      res.status(200).send(users);
     } catch (error) {
       res.status(500).send({ message: "lỗi sever" });
     }
   }
+
   async detail(req, res) {
     try {
       const idUser = req.query.idUser;
-      console.log(idUser);
       const detailUser = await UserModel.findById(idUser);
-      console.log(detailUser);
       res.status(200).send(detailUser);
     } catch (error) {
       res.status(500).send({ message: "lỗi sever" });

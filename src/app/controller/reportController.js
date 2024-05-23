@@ -7,11 +7,15 @@ class ReportController {
       const idUser = req.body.idUser;
       const { date, today, tomorrow } = req.body;
       const user = await UserModel.findById(idUser);
+      if (!user) {
+        return res.status(404).send({ message: "Người dùng không tồn tại" });
+      }
       const checkReport = await ReportModel.findOne({ date, idUser });
       if (checkReport) {
         const editReport = await ReportModel.findOneAndUpdate(
           { date, idUser },
-          { today, tomorrow }
+          { today, tomorrow },
+          { new: true }
         );
         return res
           .status(200)
@@ -27,7 +31,7 @@ class ReportController {
       });
       res.status(200).send({ message: "Báo cáo đã được lưu", report });
     } catch (error) {
-      res.status(500).send({ message: "lỗi sever", error });
+      res.status(500).send({ message: "Lỗi server", error });
     }
   }
 
@@ -36,6 +40,9 @@ class ReportController {
       const idUser = req.body.idUser;
       const { date, today, tomorrow } = req.body;
       const user = await UserModel.findById(idUser);
+      if (!user) {
+        return res.status(404).send({ message: "Người dùng không tồn tại" });
+      }
       const checkReport = await ReportModel.findOne({ date, idUser });
       if (!checkReport) {
         const createReport = await ReportModel.create({
@@ -58,11 +65,14 @@ class ReportController {
         {
           today: today,
           tomorrow: tomorrow,
-        }
+        },
+        { new: true }
       );
-      return res.status(200).send({ message: "Báo cáo đã được lưu", report });
+      return res
+        .status(200)
+        .send({ message: "Báo cáo đã được chỉnh sửa", report });
     } catch (error) {
-      res.status(500).send({ message: "lỗi sever", error });
+      res.status(500).send({ message: "Lỗi server", error });
     }
   }
 
@@ -73,11 +83,14 @@ class ReportController {
         ? req.query.date
         : new Date().toLocaleDateString("en-GB");
       const report = await ReportModel.findOne({ date: date, idUser: idUser });
+      if (!report) {
+        return res.status(404).send({ message: "Không tìm thấy báo cáo" });
+      }
       console.log(date);
       console.log(report);
       res.status(200).send(report);
     } catch (error) {
-      res.status(500).send({ message: "lỗi sever" });
+      res.status(500).send({ message: "Lỗi server" });
     }
   }
 }

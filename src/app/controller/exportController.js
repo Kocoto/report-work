@@ -12,9 +12,7 @@ class ExportController {
         __dirname,
         "../../../daily report.xlsx"
       );
-      const countUser = await UserModel.countDocuments();
-      const countReport = await ReportModel.countDocuments({ date: date });
-      const nonReport = countUser - 1 - countReport;
+
       const workbook = new ExcelJS.Workbook();
       await workbook.xlsx.readFile(templatePath);
       const report = await ReportModel.find({ date: date }).sort({ msnv: 1 });
@@ -25,63 +23,51 @@ class ExportController {
         note,
       });
 
-      //tạo báo cáo trống cho người chưa báo cáo
-      UserModel.find({ role: "user" })
-        .then((users) => {
-          users.forEach((user) => {
-            ReportModel.findOne({ date: date, idUser: user._id })
-              .then((report) => {
-                if (!report) {
-                  ReportModel.create({
-                    date: date,
-                    today: "",
-                    tomorrow: "",
-                    name: user.name,
-                    idUser: user._id,
-                    msnv: user.msnv,
-                  }).catch((error) => {
-                    console.log(error);
-                    res.status(500).send({
-                      error,
-                      message: "lỗi sever khi tạo báo cáo mới",
-                    });
-                  });
-                }
-              })
-              .catch((error) => {
-                console.log(error);
-                res
-                  .status(500)
-                  .send({ error, message: "lỗi sever khi tạo báo cáo mới" });
-              });
-          });
-        })
-        .catch((error) => {
-          console.log(error);
-          res
-            .status(500)
-            .send({ error, message: "lỗi sever khi tạo báo cáo mới" });
+      // Tạo báo cáo trống cho người chưa báo cáo
+      const users = await UserModel.find({ role: "user" });
+      for (const user of users) {
+        const reportExists = await ReportModel.findOne({
+          date: date,
+          idUser: user._id,
         });
+        if (!reportExists) {
+          try {
+            await ReportModel.create({
+              date: date,
+              today: "",
+              tomorrow: "",
+              name: user.name,
+              idUser: user._id,
+              msnv: user.msnv,
+            });
+          } catch (error) {
+            console.error(error);
+            res.status(500).send({
+              error,
+              message: "Lỗi server khi tạo báo cáo mới",
+            });
+            return;
+          }
+        }
+      }
 
-      //thiết lập danh sách những người cần báo cáo
-      const user = await UserModel.find({ role: "user" }).sort({ msnv: 1 });
-
+      // Thiết lập danh sách những người cần báo cáo
       report.forEach((report) => {
         const row = worksheet.getRow(rowIndex);
         row.height = undefined;
-        //đặt giá trị
+        // Đặt giá trị
         worksheet.getCell(`A${rowIndex}`).value = report.msnv;
         worksheet.getCell(`B${rowIndex}`).value = report.name;
         worksheet.getCell(`C${rowIndex}`).value = report.today;
         worksheet.getCell(`D${rowIndex}`).value = report.tomorrow;
 
-        //xuống dòng
+        // Xuống dòng
         row.getCell("A").alignment = { wrapText: true };
         row.getCell("B").alignment = { wrapText: true };
         row.getCell("C").alignment = { wrapText: true };
         row.getCell("D").alignment = { wrapText: true };
 
-        //thiết lập viền
+        // Thiết lập viền
         const borderStyle = {
           top: { style: "thin" },
           left: { style: "thin" },
@@ -93,19 +79,7 @@ class ExportController {
         worksheet.getCell(`C${rowIndex}`).border = borderStyle;
         worksheet.getCell(`D${rowIndex}`).border = borderStyle;
 
-        //tính độ dài
-        const msnvLength = (report.msnv || "").toString().length;
-        const nameLength = (report.name || "").toString().length;
-        const todayLength = (report.today || "").toString().length;
-        const tomorrowLength = (report.tomorrow || "").toString().length;
-        const maxTextLength = Math.max(
-          msnvLength,
-          nameLength,
-          todayLength,
-          tomorrowLength
-        );
-
-        //căn chỉnh văn bản
+        // Căn chỉnh văn bản
         worksheet.getCell(`A${rowIndex}`).alignment = {
           horizontal: "center",
           vertical: "middle",
@@ -174,7 +148,7 @@ class ExportController {
       const report = await ReportModel.find({ date: date });
       res.status(200).send({ report, note });
     } catch (error) {
-      res.status(500).send("Lỗi sever khi tìm kiếm report");
+      res.status(500).send("Lỗi server khi tìm kiếm report");
     }
   }
 }
