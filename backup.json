@@ -1,0 +1,28 @@
+{
+  "date": "01",
+  "month": "10",
+  "year": "2023",
+  "entries": [
+    {
+      "name": "Nguyen Van A",
+      "department": "IT",
+      "startTime": "18:00",
+      "endTime": "20:00",
+      "reason": "Hoàn thành dự án"
+    },
+    {
+      "name": "Tran Thi B",
+      "department": "HR",
+      "startTime": "18:00",
+      "endTime": "21:00",
+      "reason": "Tuyển dụng"
+    },
+    {
+      "name": "Le Van C",
+      "department": "Finance",
+      "startTime": "19:00",
+      "endTime": "22:00",
+      "reason": "Báo cáo tài chính"
+    }
+  ]
+}
