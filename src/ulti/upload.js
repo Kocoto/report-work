@@ -3,13 +3,7 @@ const multer = require("multer");
 const storage = multer.memoryStorage(); // Lưu trữ tạm thời ảnh trong bộ nhớ
 const upload = multer({ storage: storage });
 
-cloudinary.config({
-  cloud_name: "dkofqxive",
-  api_key: "377965399128162",
-  api_secret: "rk9MsQBF1itZ-WlWQ0updpJwvXs",
-  secure: true,
-});
-
+// Cấu hình Cloudinary đã được chuyển sang file config riêng
 const uploadToCloudinary = upload.single("avatar");
 
 const cloudinaryMiddleware = (req, res, next) => {

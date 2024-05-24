@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 
 class CreateAccountController {
   async create(req, res) {
-    const { name, password, username, role } = req.body;
+    const { name, password, username, role, position, department } = req.body;
     try {
       const userExists = await UserModel.findOne({ username: username });
       if (userExists) {
@@ -30,6 +30,8 @@ class CreateAccountController {
         role,
         msnv,
         avatar: avatarUrl,
+        position, // thêm trường chức vụ
+        department, // thêm trường bộ phận
       });
 
       res.status(201).send("đã tạo người dùng mới thành công");
@@ -39,13 +41,16 @@ class CreateAccountController {
   }
 
   async edit(req, res) {
-    const { role, name, username, password, status, id } = req.body;
+    const { role, name, username, password, status, id, position, department } =
+      req.body;
     try {
       const updateData = {
         role,
         name,
         username,
         status,
+        position, // cập nhật trường chức vụ
+        department, // cập nhật trường bộ phận
       };
 
       if (password) {

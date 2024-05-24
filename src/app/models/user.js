@@ -13,6 +13,9 @@ const User = new mongoose.Schema(
     name: String,
     msnv: String,
     avatar: String,
+    email: String,
+    position: String, // trường chức vụ
+    department: String, //  trường bộ phận
   },
   {
     timestamps: true,

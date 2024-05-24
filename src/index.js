@@ -13,9 +13,14 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./ulti/swagger.json");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const cors = require("cors");
+const homeController = require("./app/controller/homeController");
 
 //connect DB
 db.connect();
+
+// Khởi tạo lịch trình gửi email ngay khi ứng dụng khởi động
+homeController.scheduleHolidayMails();
+homeController.scheduleMail();
 
 // Enable CORS for all routes
 app.use(cors());

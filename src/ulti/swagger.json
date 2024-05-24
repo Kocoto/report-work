@@ -3,31 +3,35 @@
   "info": {
     "version": "1.0.0",
     "title": "Report_work API",
-    "description": "API for managing reports, users, and authentication."
+    "description": "API để quản lý báo cáo, người dùng và xác thực."
   },
   "host": "report-work.onrender.com",
   "tags": [
     {
       "name": "User",
-      "description": "Operations related to users"
+      "description": "Các thao tác liên quan đến người dùng"
     },
     {
       "name": "Export",
-      "description": "Operations related to exporting reports"
+      "description": "Các thao tác liên quan đến xuất báo cáo"
     },
     {
       "name": "Authentication",
-      "description": "Operations related to user authentication"
+      "description": "Các thao tác liên quan đến xác thực người dùng"
     },
     {
       "name": "Report",
-      "description": "Operations related to reports"
+      "description": "Các thao tác liên quan đến báo cáo"
+    },
+    {
+      "name": "Leave Request",
+      "description": "Các thao tác liên quan đến yêu cầu nghỉ phép"
     }
   ],
   "securityDefinitions": {
     "Bearer": {
       "type": "apiKey",
-      "description": "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below. Example: 'Bearer 12345abcdef'",
+      "description": "Tiêu đề ủy quyền JWT sử dụng schema Bearer. Nhập 'Bearer' [khoảng trắng] và sau đó là token của bạn vào ô nhập liệu bên dưới. Ví dụ: 'Bearer 12345abcdef'",
       "name": "Authorization",
       "in": "header"
     }
@@ -40,14 +44,14 @@
   "paths": {
     "/user/create": {
       "post": {
-        "summary": "Create a new user",
+        "summary": "Tạo người dùng mới",
         "tags": ["User"],
-        "description": "API to create a new user by an admin.",
+        "description": "API để tạo người dùng mới bởi admin.",
         "parameters": [
           {
             "in": "body",
             "name": "body",
-            "description": "User information to create",
+            "description": "Thông tin người dùng để tạo",
             "required": true,
             "schema": {
               "$ref": "#/definitions/UserInput"
@@ -57,19 +61,19 @@
         "produces": ["application/json"],
         "responses": {
           "201": {
-            "description": "New user created successfully.",
+            "description": "Người dùng mới được tạo thành công.",
             "schema": {
               "$ref": "#/definitions/UserResponse"
             }
           },
           "409": {
-            "description": "Username already exists.",
+            "description": "Tên người dùng đã tồn tại.",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
           },
           "500": {
-            "description": "Server error when creating a new user.",
+            "description": "Lỗi server khi tạo người dùng mới.",
             "schema": {
               "$ref": "#/definitions/ErrorResponse"
             }
@@ -79,14 +83,14 @@
     },
     "/export/download": {
       "post": {
-        "summary": "Export report",
+        "summary": "Xuất báo cáo",
         "tags": ["Export"],
-        "description": "Admin exports a report",
+        "description": "Admin xuất báo cáo",
         "parameters": [
           {
             "in": "body",
             "name": "body",
-            "description": "Date and optional note for the report to be exported",
+            "description": "Ngày và ghi chú tùy chọn cho báo cáo cần xuất",
             "required": true,
             "schema": {
               "$ref": "#/definitions/ReportDownload"
@@ -98,30 +102,27 @@
         ],
         "responses": {
           "200": {
-            "description": "Excel file downloaded successfully",
-            "schema": {
-              "type": "file"
-            }
+            "description": "Tệp Excel đã được tải xuống thành công"
           },
           "404": {
-            "description": "No reports found for this date."
+            "description": "Không tìm thấy báo cáo cho ngày này."
           },
           "500": {
-            "description": "Error while generating report."
+            "description": "Lỗi khi tạo báo cáo."
           }
         }
       }
     },
     "/login": {
       "post": {
-        "summary": "Login",
+        "summary": "Đăng nhập",
         "tags": ["Authentication"],
-        "description": "User login",
+        "description": "Người dùng đăng nhập",
         "parameters": [
           {
             "in": "body",
             "name": "body",
-            "description": "Credentials required for login",
+            "description": "Thông tin đăng nhập cần thiết",
             "required": true,
             "schema": {
               "$ref": "#/definitions/Login"
@@ -131,7 +132,7 @@
         "produces": ["application/json"],
         "responses": {
           "200": {
-            "description": "Logged in successfully",
+            "description": "Đăng nhập thành công",
             "schema": {
               "type": "object",
               "properties": {
@@ -154,14 +155,14 @@
             }
           },
           "404": {
-            "description": "User not found.",
+            "description": "Không tìm thấy người dùng.",
             "schema": {
               "type": "string",
               "example": "Không tìm thấy người dùng"
             }
           },
           "500": {
-            "description": "Error during login or password comparison",
+            "description": "Lỗi khi đăng nhập hoặc so sánh mật khẩu",
             "schema": {
               "type": "string",
               "example": "lỗi khi so sánh mật khẩu hoặc lỗi server"
@@ -172,14 +173,14 @@
     },
     "/export": {
       "get": {
-        "summary": "View report",
+        "summary": "Xem báo cáo",
         "tags": ["Export"],
-        "description": "View report information",
+        "description": "Xem thông tin báo cáo",
         "parameters": [
           {
             "name": "date",
             "in": "query",
-            "description": "Date for the report in format YYYY-MM-DD",
+            "description": "Ngày của báo cáo theo định dạng YYYY-MM-DD",
             "required": false,
             "type": "string",
             "format": "date",
@@ -189,27 +190,27 @@
         "produces": ["application/json"],
         "responses": {
           "200": {
-            "description": "Report information retrieved successfully",
+            "description": "Thông tin báo cáo được lấy thành công",
             "schema": {
               "$ref": "#/definitions/Report"
             }
           },
           "500": {
-            "description": "Server error when searching for report."
+            "description": "Lỗi server khi tìm kiếm báo cáo."
           }
         }
       }
     },
     "/report/input": {
       "post": {
-        "summary": "Submit report",
+        "summary": "Nộp báo cáo",
         "tags": ["Report"],
-        "description": "User submits a report",
+        "description": "Người dùng nộp báo cáo",
         "parameters": [
           {
             "in": "body",
             "name": "body",
-            "description": "Information of the report",
+            "description": "Thông tin của báo cáo",
             "required": true,
             "schema": {
               "$ref": "#/definitions/InputReport"
@@ -219,7 +220,7 @@
         "produces": ["application/json"],
         "responses": {
           "200": {
-            "description": "Report submitted successfully",
+            "description": "Báo cáo đã được nộp thành công",
             "schema": {
               "type": "object",
               "properties": {
@@ -234,7 +235,7 @@
             }
           },
           "500": {
-            "description": "Server error when submitting report.",
+            "description": "Lỗi server khi nộp báo cáo.",
             "schema": {
               "type": "object",
               "properties": {
@@ -253,14 +254,14 @@
     },
     "/report": {
       "get": {
-        "summary": "Form submit report",
+        "summary": "Lấy báo cáo",
         "tags": ["Report"],
-        "description": "User retrieves a report",
+        "description": "Người dùng lấy báo cáo",
         "parameters": [
           {
             "name": "date",
             "in": "query",
-            "description": "Date of the report in format YYYY-MM-DD",
+            "description": "Ngày của báo cáo theo định dạng YYYY-MM-DD",
             "required": false,
             "type": "string",
             "format": "date",
@@ -269,7 +270,7 @@
           {
             "name": "idUser",
             "in": "query",
-            "description": "User's ID",
+            "description": "ID của người dùng",
             "required": false,
             "type": "string",
             "example": "5f8d04b3bcfd1312d4a1c8b1"
@@ -278,45 +279,45 @@
         "produces": ["application/json"],
         "responses": {
           "200": {
-            "description": "Report form retrieved successfully",
+            "description": "Báo cáo được lấy thành công",
             "schema": {
               "$ref": "#/definitions/ReportDetail"
             }
           },
           "500": {
-            "description": "Server error when retrieving report form."
+            "description": "Lỗi server khi lấy báo cáo."
           }
         }
       }
     },
     "/user": {
       "get": {
-        "summary": "Get all users",
+        "summary": "Lấy tất cả người dùng",
         "tags": ["User"],
-        "description": "Retrieve all user information",
+        "description": "Lấy thông tin tất cả người dùng",
         "responses": {
           "200": {
-            "description": "All user information retrieved successfully",
+            "description": "Thông tin tất cả người dùng được lấy thành công",
             "schema": {
               "$ref": "#/definitions/AllUser"
             }
           },
           "500": {
-            "description": "Server error."
+            "description": "Lỗi server."
           }
         }
       }
     },
     "/user/edit": {
       "put": {
-        "summary": "Edit user",
+        "summary": "Chỉnh sửa người dùng",
         "tags": ["User"],
-        "description": "Edit user information",
+        "description": "Chỉnh sửa thông tin người dùng",
         "parameters": [
           {
             "in": "body",
             "name": "user",
-            "description": "User information to be edited",
+            "description": "Thông tin người dùng cần chỉnh sửa",
             "required": true,
             "schema": {
               "$ref": "#/definitions/EditUser"
@@ -326,7 +327,7 @@
         "produces": ["application/json"],
         "responses": {
           "200": {
-            "description": "User information edited successfully",
+            "description": "Thông tin người dùng được chỉnh sửa thành công",
             "schema": {
               "type": "object",
               "properties": {
@@ -341,7 +342,7 @@
             }
           },
           "500": {
-            "description": "Server error when editing user information.",
+            "description": "Lỗi server khi chỉnh sửa thông tin người dùng.",
             "schema": {
               "type": "object",
               "properties": {
@@ -357,14 +358,14 @@
     },
     "/user/detail": {
       "get": {
-        "summary": "User's information",
+        "summary": "Thông tin người dùng",
         "tags": ["User"],
-        "description": "Retrieve user's detailed information",
+        "description": "Lấy thông tin chi tiết của người dùng",
         "parameters": [
           {
             "name": "idUser",
             "in": "query",
-            "description": "User's ID to retrieve detailed information",
+            "description": "ID của người dùng để lấy thông tin chi tiết",
             "required": true,
             "type": "string",
             "example": "5f8d04b3bcfd1312d4a1c8b1"
@@ -373,13 +374,13 @@
         "produces": ["application/json"],
         "responses": {
           "200": {
-            "description": "User's information displayed successfully",
+            "description": "Thông tin người dùng được hiển thị thành công",
             "schema": {
               "$ref": "#/definitions/UserDetail"
             }
           },
           "500": {
-            "description": "Server error when displaying user's information.",
+            "description": "Lỗi server khi hiển thị thông tin người dùng.",
             "schema": {
               "type": "object",
               "properties": {
@@ -395,14 +396,14 @@
     },
     "/report/edit": {
       "put": {
-        "summary": "Edit report",
+        "summary": "Chỉnh sửa báo cáo",
         "tags": ["Report"],
-        "description": "Edit report information",
+        "description": "Chỉnh sửa thông tin báo cáo",
         "parameters": [
           {
             "in": "body",
             "name": "report",
-            "description": "Report information to be edited",
+            "description": "Thông tin báo cáo cần chỉnh sửa",
             "required": true,
             "schema": {
               "$ref": "#/definitions/EditReport"
@@ -412,7 +413,7 @@
         "produces": ["application/json"],
         "responses": {
           "200": {
-            "description": "Report edited successfully",
+            "description": "Báo cáo được chỉnh sửa thành công",
             "schema": {
               "type": "object",
               "properties": {
@@ -427,7 +428,7 @@
             }
           },
           "500": {
-            "description": "Server error when editing report.",
+            "description": "Lỗi server khi chỉnh sửa báo cáo.",
             "schema": {
               "type": "object",
               "properties": {
@@ -446,14 +447,14 @@
     },
     "/export/update": {
       "put": {
-        "summary": "Update note",
+        "summary": "Cập nhật ghi chú",
         "tags": ["Export"],
-        "description": "Admin updates a note",
+        "description": "Admin cập nhật ghi chú",
         "parameters": [
           {
             "in": "body",
             "name": "note",
-            "description": "Note information to be updated",
+            "description": "Thông tin ghi chú cần cập nhật",
             "required": true,
             "schema": {
               "$ref": "#/definitions/Note"
@@ -463,7 +464,7 @@
         "produces": ["application/json"],
         "responses": {
           "200": {
-            "description": "Note updated successfully",
+            "description": "Ghi chú được cập nhật thành công",
             "schema": {
               "type": "object",
               "properties": {
@@ -478,7 +479,7 @@
             }
           },
           "500": {
-            "description": "Server error when updating note.",
+            "description": "Lỗi server khi cập nhật ghi chú.",
             "schema": {
               "type": "object",
               "properties": {
@@ -488,6 +489,70 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/leave-request/download": {
+      "post": {
+        "summary": "Tạo yêu cầu xin nghỉ phép và tải xuống tệp Word",
+        "description": "Tạo một yêu cầu xin nghỉ phép mới và trả về tệp Word đã điền dữ liệu",
+        "tags": ["Leave Request"],
+        "consumes": ["application/json"],
+        "produces": [
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Thông tin yêu cầu xin nghỉ phép",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LeaveRequestInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tệp Word đã được tạo và trả về"
+          },
+          "404": {
+            "description": "Người dùng không tồn tại"
+          },
+          "500": {
+            "description": "Đã xảy ra lỗi khi tạo file"
+          }
+        }
+      }
+    },
+    "/leave-request": {
+      "get": {
+        "summary": "Lấy thông tin người dùng",
+        "description": "Lấy thông tin người dùng dựa trên idUser",
+        "tags": ["Leave Request"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "idUser",
+            "in": "query",
+            "description": "ID của người dùng",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thông tin người dùng",
+            "schema": {
+              "$ref": "#/definitions/UserInfo"
+            }
+          },
+          "404": {
+            "description": "Người dùng không tồn tại"
+          },
+          "500": {
+            "description": "Đã xảy ra lỗi khi lấy thông tin người dùng"
           }
         }
       }
@@ -522,6 +587,14 @@
         "avatar": {
           "type": "string",
           "example": "http://example.com/avatar.jpg"
+        },
+        "position": {
+          "type": "string",
+          "example": "Manager"
+        },
+        "department": {
+          "type": "string",
+          "example": "Human Resources"
         }
       }
     },
@@ -547,6 +620,14 @@
         "avatar": {
           "type": "string",
           "example": "http://example.com/avatar.jpg"
+        },
+        "position": {
+          "type": "string",
+          "example": "Manager"
+        },
+        "department": {
+          "type": "string",
+          "example": "Human Resources"
         }
       }
     },
@@ -555,7 +636,7 @@
       "properties": {
         "message": {
           "type": "string",
-          "example": "An error occurred while creating a new user"
+          "example": "Đã xảy ra lỗi khi tạo người dùng mới"
         }
       }
     },
@@ -683,6 +764,14 @@
         "avatar": {
           "type": "string",
           "example": "http://example.com/avatar.jpg"
+        },
+        "position": {
+          "type": "string",
+          "example": "Manager"
+        },
+        "department": {
+          "type": "string",
+          "example": "Human Resources"
         }
       }
     },
@@ -713,6 +802,14 @@
         "status": {
           "type": "string",
           "example": "active"
+        },
+        "position": {
+          "type": "string",
+          "example": "Manager"
+        },
+        "department": {
+          "type": "string",
+          "example": "Human Resources"
         }
       }
     },
@@ -746,6 +843,92 @@
         "note": {
           "type": "string",
           "example": "Thông tin quan trọng cần cập nhật"
+        }
+      }
+    },
+    "LeaveRequestInput": {
+      "type": "object",
+      "required": [
+        "idUser",
+        "fullname",
+        "msnv",
+        "position",
+        "department",
+        "startDate",
+        "endDate",
+        "reason",
+        "handoverPerson",
+        "handoverDepartment",
+        "applicationDate"
+      ],
+      "properties": {
+        "idUser": {
+          "type": "string",
+          "description": "ID của người dùng"
+        },
+        "fullname": {
+          "type": "string",
+          "description": "Họ và tên của người dùng"
+        },
+        "msnv": {
+          "type": "string",
+          "description": "Mã số nhân viên"
+        },
+        "position": {
+          "type": "string",
+          "description": "Chức vụ"
+        },
+        "department": {
+          "type": "string",
+          "description": "Bộ phận"
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date",
+          "description": "Ngày bắt đầu nghỉ"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date",
+          "description": "Ngày kết thúc nghỉ"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Lý do xin nghỉ"
+        },
+        "handoverPerson": {
+          "type": "string",
+          "description": "Người bàn giao công việc"
+        },
+        "handoverDepartment": {
+          "type": "string",
+          "description": "Bộ phận của người bàn giao"
+        },
+        "applicationDate": {
+          "type": "string",
+          "format": "date",
+          "description": "Ngày làm đơn"
+        }
+      }
+    },
+    "LeaveRequestOutput": {
+      "type": "file",
+      "description": "Tệp Word đã được tạo và trả về"
+    },
+    "UserInfo": {
+      "type": "object",
+      "properties": {
+        "msnv": {
+          "type": "string",
+          "description": "Mã số nhân viên"
+        },
+        "position": {
+          "type": "string",
+          "description": "Chức vụ"
+        },
+        "department": {
+          "type": "string",
+          "description": "Bộ phận"
         }
       }
     }
