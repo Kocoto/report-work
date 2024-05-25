@@ -26,6 +26,14 @@
     {
       "name": "Leave Request",
       "description": "Các thao tác liên quan đến yêu cầu nghỉ phép"
+    },
+    {
+      "name": "Overtime Request",
+      "description": "Các thao tác liên quan đến yêu cầu làm thêm giờ"
+    },
+    {
+      "name": "Email",
+      "description": "Quản lý đăng ký email"
     }
   ],
   "securityDefinitions": {
@@ -556,6 +564,364 @@
           }
         }
       }
+    },
+    "/overtime-request/post": {
+      "post": {
+        "tags": ["Overtime Request"],
+        "summary": "Tạo yêu cầu làm thêm giờ",
+        "description": "",
+        "operationId": "createOvertimeRequest",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Thông tin yêu cầu làm thêm giờ",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OvertimeRequestInput"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Yêu cầu OT đã được lưu trữ",
+            "schema": {
+              "$ref": "#/definitions/OvertimeRequestOutput"
+            }
+          },
+          "400": {
+            "description": "Qua 4 giờ chiều, vui lòng liên hệ với kế toán để đăng ký",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Đã xảy ra lỗi khi lưu trữ yêu cầu OT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/overtime-request/put/{id}": {
+      "put": {
+        "tags": ["Overtime Request"],
+        "summary": "Cập nhật yêu cầu làm thêm giờ",
+        "description": "",
+        "operationId": "updateOvertimeRequest",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Thông tin cập nhật yêu cầu làm thêm giờ",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OvertimeRequestInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Yêu cầu OT đã được cập nhật",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy yêu cầu OT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Đã xảy ra lỗi khi cập nhật yêu cầu OT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/overtime-request/delete/{id}": {
+      "delete": {
+        "tags": ["Overtime Request"],
+        "summary": "Xóa yêu cầu làm thêm giờ",
+        "description": "",
+        "operationId": "deleteOvertimeRequest",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Yêu cầu OT đã được xóa",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy yêu cầu OT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Đã xảy ra lỗi khi xóa yêu cầu OT",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/overtime-request": {
+      "get": {
+        "tags": ["Overtime Request"],
+        "summary": "Tạo báo cáo làm thêm giờ",
+        "description": "",
+        "operationId": "generateOvertimeReport",
+        "produces": [
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        ],
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "format": "date"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Báo cáo làm thêm giờ đã được tạo",
+            "schema": {
+              "type": "file"
+            }
+          },
+          "500": {
+            "description": "Đã xảy ra lỗi khi tạo file",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/resigter-email": {
+      "get": {
+        "tags": ["Email"],
+        "summary": "Đăng ký nhận email thông báo",
+        "description": "",
+        "operationId": "resigterEmail",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "idUser",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Đã đăng ký nhận mail thông báo thành công",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "idUser": {
+                      "type": "string"
+                    },
+                    "resigter": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Thiếu idUser trong yêu cầu",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy người dùng",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Đã xảy ra lỗi",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/unregister-email": {
+      "get": {
+        "tags": ["Email"],
+        "summary": "Hủy đăng ký nhận email thông báo",
+        "description": "",
+        "operationId": "unregisterEmail",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "idUser",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Đã hủy đăng ký nhận mail thông báo thành công",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "idUser": {
+                      "type": "string"
+                    },
+                    "resigter": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Thiếu idUser trong yêu cầu",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy người dùng",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Đã xảy ra lỗi",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
 
@@ -929,6 +1295,87 @@
         "department": {
           "type": "string",
           "description": "Bộ phận"
+        }
+      }
+    },
+    "OvertimeRequestInput": {
+      "type": "object",
+      "required": [
+        "idUser",
+        "name",
+        "department",
+        "date",
+        "startTime",
+        "endTime",
+        "reason"
+      ],
+      "properties": {
+        "idUser": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "department": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "startTime": {
+          "type": "string",
+          "pattern": "^([01]?[0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "endTime": {
+          "type": "string",
+          "pattern": "^([01]?[0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "OvertimeRequestOutput": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "overtimeRequest": {
+          "type": "object",
+          "properties": {
+            "idUser": {
+              "type": "string"
+            },
+            "index": {
+              "type": "integer"
+            },
+            "name": {
+              "type": "string"
+            },
+            "department": {
+              "type": "string"
+            },
+            "date": {
+              "type": "string",
+              "format": "date"
+            },
+            "startTime": {
+              "type": "string",
+              "pattern": "^([01]?[0-9]|2[0-3]):[0-5][0-9]$"
+            },
+            "endTime": {
+              "type": "string",
+              "pattern": "^([01]?[0-9]|2[0-3]):[0-5][0-9]$"
+            },
+            "reason": {
+              "type": "string"
+            },
+            "_id": {
+              "type": "string"
+            }
+          }
         }
       }
     }

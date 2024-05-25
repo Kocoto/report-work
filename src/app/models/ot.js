@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 const OvertimeRequestSchema = new mongoose.Schema(
   {
+    idUser: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+      required: true,
+    },
     name: String,
     department: String,
     date: String,

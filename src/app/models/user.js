@@ -10,6 +10,10 @@ const User = new mongoose.Schema(
       default: "active",
       enum: ["active", "inactive"],
     },
+    resigter: {
+      type: Boolean,
+      default: false,
+    },
     name: String,
     msnv: String,
     avatar: String,

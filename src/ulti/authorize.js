@@ -16,6 +16,11 @@ function checkLogin(req, res, next) {
       UserModel.findById(decoded._id)
         .then((user) => {
           if (user) {
+            if (user.status === "inactive") {
+              return res
+                .status(403)
+                .json({ message: "Tài khoản của bạn đã bị vô hiệu hóa" });
+            }
             req.user = user;
             console.log("Xác thực người dùng thành công: " + req.user);
             next();

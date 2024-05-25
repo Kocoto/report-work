@@ -7,7 +7,16 @@ const path = require("path");
 class OvertimeRequestController {
   async createOvertimeRequest(req, res) {
     try {
-      const { name, department, date, startTime, endTime, reason } = req.body;
+      const { idUser, name, department, date, startTime, endTime, reason } =
+        req.body;
+      const endTimeHour = parseInt(endTime.split(":")[0]);
+      if (endTimeHour >= 16) {
+        res.status(400).send({
+          message: "Qua 4 giờ chiều, vui lòng liên hệ với kế toán để đăng ký",
+        });
+        return;
+      }
+
       let index = "";
       const indexMax = await OTModel.find({ date })
         .select("index -_id")
@@ -21,6 +30,7 @@ class OvertimeRequestController {
       }
 
       const overtimeRequest = new OTModel({
+        idUser,
         index,
         name,
         department,
@@ -31,32 +41,38 @@ class OvertimeRequestController {
       });
 
       await overtimeRequest.save();
-      res.status(201).send("Yêu cầu OT đã được lưu trữ");
+      res.status(201).send({
+        message: "Yêu cầu OT đã được lưu trữ",
+        overtimeRequest, // Trả về toàn bộ đối tượng yêu cầu OT, bao gồm cả id
+      });
     } catch (error) {
       console.error("Error:", error);
-      res.status(500).send("Đã xảy ra lỗi khi lưu trữ yêu cầu OT");
+      res.status(500).send({ message: "Đã xảy ra lỗi khi lưu trữ yêu cầu OT" });
     }
   }
 
   async updateOvertimeRequest(req, res) {
     try {
       const { id } = req.params;
-      const { name, department, date, startTime, endTime, reason } = req.body;
+      const { idUser, name, department, date, startTime, endTime, reason } =
+        req.body;
 
       const updatedRequest = await OTModel.findByIdAndUpdate(
         id,
-        { name, department, date, startTime, endTime, reason },
+        { idUser, name, department, date, startTime, endTime, reason },
         { new: true }
       );
 
       if (!updatedRequest) {
-        return res.status(404).send("Không tìm thấy yêu cầu OT");
+        return res.status(404).send({ message: "Không tìm thấy yêu cầu OT" });
       }
 
-      res.status(200).send("Yêu cầu OT đã được cập nhật");
+      res.status(200).send({ message: "Yêu cầu OT đã được cập nhật" });
     } catch (error) {
       console.error("Error:", error);
-      res.status(500).send("Đã xảy ra lỗi khi cập nhật yêu cầu OT");
+      res
+        .status(500)
+        .send({ message: "Đã xảy ra lỗi khi cập nhật yêu cầu OT" });
     }
   }
 
@@ -67,13 +83,13 @@ class OvertimeRequestController {
       const deletedRequest = await OTModel.findByIdAndDelete(id);
 
       if (!deletedRequest) {
-        return res.status(404).send("Không tìm thấy yêu cầu OT");
+        return res.status(404).send({ message: "Không tìm thấy yêu cầu OT" });
       }
 
-      res.status(200).send("Yêu cầu OT đã được xóa");
+      res.status(200).send({ message: "Yêu cầu OT đã được xóa" });
     } catch (error) {
       console.error("Error:", error);
-      res.status(500).send("Đã xảy ra lỗi khi xóa yêu cầu OT");
+      res.status(500).send({ message: "Đã xảy ra lỗi khi xóa yêu cầu OT" });
     }
   }
 
@@ -86,36 +102,36 @@ class OvertimeRequestController {
       const year = currentDate.getFullYear();
       console.log(year);
       const { date } = req.query;
-      //   const overtimeRequests = await OTModel.find({ date });
-      const overtimeRequests = [
-        {
-          index: 1,
-          name: "Nguyen Van A",
-          department: "IT",
-          startTime: "18:00",
-          endTime: "20:00",
-          reason: "Hoàn thành dự án",
-          signature: "Nguyen Van A",
-        },
-        {
-          index: 2,
-          name: "Tran Thi B",
-          department: "HR",
-          startTime: "18:00",
-          endTime: "21:00",
-          reason: "Tuyển dụng",
-          signature: "Tran Thi B",
-        },
-        {
-          index: 3,
-          name: "Le Van C",
-          department: "Finance",
-          startTime: "19:00",
-          endTime: "22:00",
-          reason: "Báo cáo tài chính",
-          signature: "Le Van C",
-        },
-      ];
+      const overtimeRequests = await OTModel.find({ date });
+      // const overtimeRequests = [
+      //   {
+      //     index: 1,
+      //     name: "Nguyen Van A",
+      //     department: "IT",
+      //     startTime: "18:00",
+      //     endTime: "20:00",
+      //     reason: "Hoàn thành dự án",
+      //     signature: "Nguyen Van A",
+      //   },
+      //   {
+      //     index: 2,
+      //     name: "Tran Thi B",
+      //     department: "HR",
+      //     startTime: "18:00",
+      //     endTime: "21:00",
+      //     reason: "Tuyển dụng",
+      //     signature: "Tran Thi B",
+      //   },
+      //   {
+      //     index: 3,
+      //     name: "Le Van C",
+      //     department: "Finance",
+      //     startTime: "19:00",
+      //     endTime: "22:00",
+      //     reason: "Báo cáo tài chính",
+      //     signature: "Le Van C",
+      //   },
+      // ];
 
       const templatePath = path.resolve(
         __dirname,
@@ -156,10 +172,10 @@ class OvertimeRequestController {
         "Content-Type":
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       });
-      res.send(buf);
+      res.status(200).send(buf);
     } catch (error) {
       console.error("Error:", error);
-      res.status(500).send("Đã xảy ra lỗi khi tạo file");
+      res.status(500).send({ message: "Đã xảy ra lỗi khi tạo file" });
     }
   }
 }

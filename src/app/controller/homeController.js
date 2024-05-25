@@ -39,9 +39,10 @@ class HomeController {
 
     cron.schedule(scheduleTime, async () => {
       try {
-        const users = await UserModel.find({ role: "user" }).select(
-          "email -_id"
-        );
+        const users = await UserModel.find({
+          role: "user",
+          resigter: true,
+        }).select("email -_id");
         const emails = users.map((user) => user.email).filter((email) => email);
         if (emails.length > 0) {
           await sendEmail(emails, subject, htmlContent);
@@ -126,6 +127,56 @@ class HomeController {
         }
       });
     });
+  }
+
+  async resigterEmail(req, res) {
+    try {
+      const idUser = req.query.idUser;
+      if (!idUser) {
+        return res.status(400).send({ message: "Thiếu idUser trong yêu cầu" });
+      }
+
+      const user = await UserModel.findByIdAndUpdate(
+        idUser,
+        { resigter: true },
+        { new: true }
+      );
+
+      if (!user) {
+        return res.status(404).send({ message: "Không tìm thấy người dùng" });
+      }
+
+      res
+        .status(200)
+        .send({ message: "Đã đăng ký nhận mail thông báo thành công", user });
+    } catch (error) {
+      res.status(500).send({ message: "Đã xảy ra lỗi", error: error.message });
+    }
+  }
+  async unregisterEmail(req, res) {
+    try {
+      const idUser = req.query.idUser;
+      if (!idUser) {
+        return res.status(400).send({ message: "Thiếu idUser trong yêu cầu" });
+      }
+
+      const user = await UserModel.findByIdAndUpdate(
+        idUser,
+        { resigter: false },
+        { new: true }
+      );
+
+      if (!user) {
+        return res.status(404).send({ message: "Không tìm thấy người dùng" });
+      }
+
+      res.status(200).send({
+        message: "Đã hủy đăng ký nhận mail thông báo thành công",
+        user,
+      });
+    } catch (error) {
+      res.status(500).send({ message: "Đã xảy ra lỗi", error: error.message });
+    }
   }
 }
 
