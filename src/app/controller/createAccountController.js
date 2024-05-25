@@ -13,10 +13,10 @@ class CreateAccountController {
       }
 
       const lastUser = await UserModel.findOne().sort({ msnv: -1 });
-      let newMsnv = "ckd001";
+      let newMsnv = "NV0001";
       if (lastUser && lastUser.msnv) {
-        const lastNumber = parseInt(lastUser.msnv.substring(3)) + 1;
-        newMsnv = `ckd${lastNumber.toString().padStart(3, "0")}`;
+        const lastNumber = parseInt(lastUser.msnv.substring(2)) + 1;
+        newMsnv = `NV${lastNumber.toString().padStart(4, "0")}`;
       }
 
       const msnv = req.body.msnv || newMsnv;
