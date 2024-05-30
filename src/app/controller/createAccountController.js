@@ -13,12 +13,14 @@ class CreateAccountController {
       }
 
       const lastUser = await UserModel.findOne().sort({ msnv: -1 });
+      console.log("lastUser", lastUser);
       let newMsnv = "NV0001";
-      if (lastUser && lastUser.msnv) {
+      if (lastUser && lastUser.msnv && lastUser.msnv.startsWith("NV")) {
+        console.log("lastUser.msnv", lastUser.msnv);
         const lastNumber = parseInt(lastUser.msnv.substring(2)) + 1;
         newMsnv = `NV${lastNumber.toString().padStart(4, "0")}`;
       }
-
+      console.log("newMsnv", newMsnv);
       const msnv = req.body.msnv || newMsnv;
       const hashPassword = await bcrypt.hash(password, 10);
       const avatarUrl = req.cloudinaryUrl || null;
