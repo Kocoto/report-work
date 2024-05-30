@@ -3,7 +3,8 @@ const bcrypt = require("bcrypt");
 
 class CreateAccountController {
   async create(req, res) {
-    const { name, password, username, role, position, department } = req.body;
+    const { name, password, username, role, position, department, email } =
+      req.body;
     try {
       const userExists = await UserModel.findOne({ username: username });
       if (userExists) {
@@ -32,6 +33,7 @@ class CreateAccountController {
         role,
         msnv,
         avatar: avatarUrl,
+        email,
         position, // thêm trường chức vụ
         department, // thêm trường bộ phận
       });

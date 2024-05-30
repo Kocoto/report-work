@@ -950,6 +950,10 @@
           "type": "string",
           "example": "ckd001"
         },
+        "email": {
+          "type": "string",
+          "example": "nguyenvana@example.com"
+        },
         "avatar": {
           "type": "string",
           "example": "http://example.com/avatar.jpg"
@@ -990,6 +994,10 @@
         "position": {
           "type": "string",
           "example": "Manager"
+        },
+        "email": {
+          "type": "string",
+          "example": "nguyenvana@example.com"
         },
         "department": {
           "type": "string",
