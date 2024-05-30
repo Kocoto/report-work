@@ -1184,6 +1184,10 @@
         "department": {
           "type": "string",
           "example": "Human Resources"
+        },
+        "email": {
+          "type": "string",
+          "example": "nguyenvana@example.com"
         }
       }
     },

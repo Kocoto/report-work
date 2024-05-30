@@ -45,8 +45,17 @@ class CreateAccountController {
   }
 
   async edit(req, res) {
-    const { role, name, username, password, status, id, position, department } =
-      req.body;
+    const {
+      role,
+      name,
+      username,
+      password,
+      status,
+      id,
+      position,
+      department,
+      email,
+    } = req.body;
     try {
       const updateData = {
         role,
@@ -55,6 +64,7 @@ class CreateAccountController {
         status,
         position, // cập nhật trường chức vụ
         department, // cập nhật trường bộ phận
+        email,
       };
 
       if (password) {
