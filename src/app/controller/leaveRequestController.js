@@ -13,7 +13,7 @@ class LeaveRequestController {
       const id = req.body.idUser;
       const user = await UserModel.findById(id);
       if (!user) {
-        return res.status(404).send("Người dùng không tồn tại");
+        return res.status(204).send("Người dùng không tồn tại");
       }
       const {
         idUser,
@@ -97,7 +97,7 @@ class LeaveRequestController {
       const id = req.query.idUser;
       const user = await UserModel.findById(id);
       if (!user) {
-        return res.status(404).send("Người dùng không tồn tại");
+        return res.status(204).send("Người dùng không tồn tại");
       }
       const { msnv, position, department } = user;
       res.status(200).send({ msnv, position, department });

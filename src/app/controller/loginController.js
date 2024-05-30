@@ -8,7 +8,7 @@ class LoginController {
     try {
       const user = await UserModel.findOne({ username: username });
       if (!user) {
-        return res.status(404).json("Không tìm thấy người dùng");
+        return res.status(204).json("Không tìm thấy người dùng");
       }
 
       const isMatch = await bcrypt.compare(password, user.password);

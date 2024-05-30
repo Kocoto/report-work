@@ -8,7 +8,7 @@ class ReportController {
       const { date, today, tomorrow } = req.body;
       const user = await UserModel.findById(idUser);
       if (!user) {
-        return res.status(404).send({ message: "Người dùng không tồn tại" });
+        return res.status(204).send({ message: "Người dùng không tồn tại" });
       }
       const checkReport = await ReportModel.findOne({ date, idUser });
       if (checkReport) {
@@ -41,7 +41,7 @@ class ReportController {
       const { date, today, tomorrow } = req.body;
       const user = await UserModel.findById(idUser);
       if (!user) {
-        return res.status(404).send({ message: "Người dùng không tồn tại" });
+        return res.status(204).send({ message: "Người dùng không tồn tại" });
       }
       const checkReport = await ReportModel.findOne({ date, idUser });
       if (!checkReport) {
@@ -84,7 +84,7 @@ class ReportController {
         : new Date().toLocaleDateString("en-GB");
       const report = await ReportModel.findOne({ date: date, idUser: idUser });
       if (!report) {
-        return res.status(404).send({ message: "Không tìm thấy báo cáo" });
+        return res.status(204).send({ message: "Không tìm thấy báo cáo" });
       }
       console.log(date);
       console.log(report);

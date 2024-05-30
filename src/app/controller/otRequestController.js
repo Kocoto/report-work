@@ -64,7 +64,7 @@ class OvertimeRequestController {
       );
 
       if (!updatedRequest) {
-        return res.status(404).send({ message: "Không tìm thấy yêu cầu OT" });
+        return res.status(204).send({ message: "Không tìm thấy yêu cầu OT" });
       }
 
       res.status(200).send({ message: "Yêu cầu OT đã được cập nhật" });
@@ -83,7 +83,7 @@ class OvertimeRequestController {
       const deletedRequest = await OTModel.findByIdAndDelete(id);
 
       if (!deletedRequest) {
-        return res.status(404).send({ message: "Không tìm thấy yêu cầu OT" });
+        return res.status(204).send({ message: "Không tìm thấy yêu cầu OT" });
       }
 
       res.status(200).send({ message: "Yêu cầu OT đã được xóa" });

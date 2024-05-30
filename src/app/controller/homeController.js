@@ -143,7 +143,7 @@ class HomeController {
       );
 
       if (!user) {
-        return res.status(404).send({ message: "Không tìm thấy người dùng" });
+        return res.status(204).send({ message: "Không tìm thấy người dùng" });
       }
 
       res
@@ -167,7 +167,7 @@ class HomeController {
       );
 
       if (!user) {
-        return res.status(404).send({ message: "Không tìm thấy người dùng" });
+        return res.status(204).send({ message: "Không tìm thấy người dùng" });
       }
 
       res.status(200).send({
