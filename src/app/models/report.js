@@ -6,6 +6,7 @@ const Report = new mongoose.Schema(
     today: String,
     tomorrow: String,
     name: String,
+    msnv: String,
     idUser: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",

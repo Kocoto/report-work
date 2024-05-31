@@ -24,7 +24,6 @@ class CreateAccountController {
       console.log("newMsnv", newMsnv);
       const msnv = req.body.msnv || newMsnv;
       const hashPassword = await bcrypt.hash(password, 10);
-      const avatarUrl = req.cloudinaryUrl || null;
 
       await UserModel.create({
         name,
@@ -32,7 +31,6 @@ class CreateAccountController {
         password: hashPassword,
         role,
         msnv,
-        avatar: avatarUrl,
         email,
         position, // thêm trường chức vụ
         department, // thêm trường bộ phận
@@ -85,7 +83,7 @@ class CreateAccountController {
 
   async user(req, res) {
     try {
-      const users = await UserModel.find();
+      const users = await UserModel.find().select("-password");
       res.status(200).send(users);
     } catch (error) {
       res.status(500).send({ message: "lỗi sever" });
@@ -97,6 +95,17 @@ class CreateAccountController {
       const idUser = req.query.idUser;
       const detailUser = await UserModel.findById(idUser);
       res.status(200).send(detailUser);
+    } catch (error) {
+      res.status(500).send({ message: "lỗi sever" });
+    }
+  }
+  async avatar(req, res) {
+    try {
+      const avatarUrl = req.cloudinaryUrl || null;
+      const user = await UserModel.findById(req.query.idUser);
+      user.avatar = avatarUrl;
+      await user.save();
+      res.status(200).send(avatarUrl);
     } catch (error) {
       res.status(500).send({ message: "lỗi sever" });
     }

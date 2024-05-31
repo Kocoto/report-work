@@ -922,6 +922,51 @@
           }
         }
       }
+    },
+    "/user/avatar": {
+      "post": {
+        "summary": "Cập nhật ảnh đại diện người dùng",
+        "tags": ["User"],
+        "description": "API để cập nhật ảnh đại diện của người dùng.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "idUser",
+            "description": "ID của người dùng",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "formData",
+            "name": "avatar",
+            "description": "File ảnh đại diện",
+            "required": true,
+            "type": "file"
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Cập nhật ảnh đại diện thành công.",
+            "schema": {
+              "type": "string",
+              "example": "http://example.com/avatar.jpg"
+            }
+          },
+          "400": {
+            "description": "Thiếu idUser hoặc file ảnh trong yêu cầu.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "description": "Lỗi server khi cập nhật ảnh đại diện.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
     }
   },
 
