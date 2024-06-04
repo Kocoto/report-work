@@ -43,23 +43,13 @@ class CreateAccountController {
   }
 
   async edit(req, res) {
-    const {
-      role,
-      name,
-      username,
-      password,
-      status,
-      id,
-      position,
-      department,
-      email,
-    } = req.body;
+    const { role, name, username, password, id, position, department, email } =
+      req.body;
     try {
       const updateData = {
         role,
         name,
         username,
-        status,
         position, // cập nhật trường chức vụ
         department, // cập nhật trường bộ phận
         email,
@@ -106,6 +96,21 @@ class CreateAccountController {
       user.avatar = avatarUrl;
       await user.save();
       res.status(200).send(avatarUrl);
+    } catch (error) {
+      res.status(500).send({ message: "lỗi sever" });
+    }
+  }
+  async status(req, res) {
+    try {
+      const { id } = req.query;
+      const user = await UserModel.findById(id);
+      if (user.status === "active") {
+        user.status = "inactive";
+      } else {
+        user.status = "active";
+      }
+      await user.save();
+      res.status(200).send(user);
     } catch (error) {
       res.status(500).send({ message: "lỗi sever" });
     }

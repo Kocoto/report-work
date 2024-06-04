@@ -967,9 +967,45 @@
           }
         }
       }
+    },
+    "/user/status": {
+      "post": {
+        "summary": "Cập nhật trạng thái người dùng",
+        "tags": ["User"],
+        "description": "API để cập nhật trạng thái người dùng từ active sang inactive và ngược lại.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "id",
+            "description": "ID của người dùng cần cập nhật trạng thái",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Cập nhật trạng thái người dùng thành công.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "active"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Lỗi server khi cập nhật trạng thái người dùng.",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
     }
   },
-
   "definitions": {
     "UserInput": {
       "type": "object",
@@ -1055,7 +1091,7 @@
       "properties": {
         "message": {
           "type": "string",
-          "example": "Đã xảy ra lỗi khi tạo người dùng mới"
+          "example": "Đã xảy ra lỗi "
         }
       }
     },

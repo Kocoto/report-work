@@ -4,6 +4,7 @@ const craeteAccountController = require("../app/controller/createAccountControll
 const cloudinaryMiddleware = require("../ulti/upload");
 
 router.post("/avatar", cloudinaryMiddleware, craeteAccountController.avatar);
+router.post("/status", craeteAccountController.status);
 router.post("/create", craeteAccountController.create);
 router.get("/detail", craeteAccountController.detail);
 router.put("/edit", craeteAccountController.edit);
